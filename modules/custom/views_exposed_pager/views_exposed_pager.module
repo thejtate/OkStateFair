@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * Implements hook_views_api().
+ */
+function views_exposed_pager_views_api() {
+  return array(
+    'api' => 3.0,
+  );
+}
+
+/**
+ * @return array
+ */
+function views_exposed_pager_theme() {
+  return array(
+    'views_exposed_pager' => array(
+      'variables' => array('pager' => '', 'exposed_pager_filter' => ''),
+      'path' => drupal_get_path('module', 'views_exposed_pager') . '/' . 'templates',
+      'template' => 'views-exposed-pager',
+    ),
+  );
+}

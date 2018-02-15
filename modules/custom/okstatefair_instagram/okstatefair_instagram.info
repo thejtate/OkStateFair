@@ -1,0 +1,6 @@
+name = Okstatefair instagram functionality
+description = Okstatefair instagram functionality. Import instagram photos to nodes by cron.
+core = 7.x
+package = custom
+
+dependencies[] = elysia_cron

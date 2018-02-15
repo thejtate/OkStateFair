@@ -1,0 +1,60 @@
+name        = Okstatefair site
+description = Custom main theme
+core        = 7.x
+
+stylesheets[all][] = css/base.css
+stylesheets[all][] = css/screen.css
+#stylesheets[all][] = css/additional.css
+stylesheets[all][] = css/custom.css
+stylesheets[print][] = css/print.css
+
+#stylesheets-conditional[IE 9][all][] = css/ie8.css
+stylesheets-conditional[IE][all][] = css/ie.css
+stylesheets-conditional[IE 8][all][] = css/screen-ie8.css
+
+scripts[] = js/lib/jquery.mousewheel.js
+scripts[] = js/lib/jquery.jscrollpane.min.js
+scripts[] = js/lib/combobox.js
+scripts[] = js/lib/jquery.pikachoose.min.js
+scripts[] = js/lib/jquery.jcarousel.min.js
+scripts[] = js/lib/jquery.validate.js
+scripts[] = js/lib/jquery.countdown.js
+scripts[] = js/lib/jquery.flexslider.js
+
+scripts[] = js/jquery.pageSlider.js
+scripts[] = js/jquery.blockSlider.js
+scripts[] = js/jquery.blockSliderMover.js
+scripts[] = js/jquery.blockSliderFader.js
+scripts[] = js/jquery.blockFader.js
+scripts[] = js/jquery.videoReaction.js
+scripts[] = js/jquery.topButtons.js
+scripts[] = js/jquery.centering.js
+scripts[] = js/lib/jquery.uniform.min.js
+;scripts[] = js/jquery.cellCalendar.js
+scripts[] = js/jquery.opener.js
+scripts[] = js/jquery.navMenu.js
+scripts[] = js/jquery.headerMenu.js
+scripts[] = js/js.js
+scripts[] = js/main.js
+scripts[] = js/custom.js
+
+regions[header] = Header
+regions[help] = Help
+regions[page_top] = Page top
+regions[page_bottom] = Page bottom
+regions[highlighted] = Highlighted
+
+regions[featured] = Featured
+regions[content] = Content
+regions[sidebar_first] = Sidebar first
+regions[sidebar_second] = Sidebar second
+
+regions[triptych_first] = Triptych first
+regions[triptych_middle] = Triptych middle
+regions[triptych_last] = Triptych last
+
+regions[footer_firstcolumn] = Footer first column
+regions[footer_secondcolumn] = Footer second column
+regions[footer_thirdcolumn] = Footer third column
+regions[footer_fourthcolumn] = Footer fourth column
+regions[footer] = Footer

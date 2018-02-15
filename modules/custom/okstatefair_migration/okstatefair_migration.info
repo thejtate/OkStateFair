@@ -1,0 +1,9 @@
+name = Okstatefair events migration (import and export)
+description =Okstate events migration module (import and export).
+core = 7.x
+package = custom
+
+dependencies[] = phpexcel
+dependencies[] = feeds
+dependencies[] = feeds_xls
+dependencies[] = okstatefair_custom

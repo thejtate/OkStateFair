@@ -1,0 +1,9 @@
+name = Okstatefair calendar functionality
+description = Okstatefair calendar functionality.
+core = 7.x
+package = custom
+
+dependencies[] = okstatefair_custom
+
+#scripts[] = js/my_agenda.js
+scripts[] = js/libs/json2.js

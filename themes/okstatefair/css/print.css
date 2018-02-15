@@ -1,0 +1,504 @@
+body {
+  font-size: 16px !important;
+  background: #fff;
+  font-family: Arial, "Helvetica CY", "Nimbus Sans L", sans-serif;
+  color: #000;
+}
+
+.header,
+.footer-type-2,
+.wrapp-player,
+.sidebar-left,
+.btn-full-right-1 {
+  display: none;
+}
+
+.page-type-promo .images-promo {
+  display: none;
+}
+.page-type-promo .body-inner {
+  background: none;
+}
+
+.table-agenda-wrapper {
+  width: 100%;
+  display: inline-block;
+  -moz-box-shadow: 0 0 0 0 transparent;
+  -webkit-box-shadow: 0 0 0 0 transparent;
+  box-shadow: 0 0 0 0 transparent;
+}
+
+.page-type-blog .body-inner .block-comments h2 {
+  display: none;
+}
+
+.page-type-contact .section-contact-form .contact-form-wrapper {
+  display: none;
+}
+
+.page-type-search .body,
+.page-type-blog .body,
+.page-type-sitemap .body,
+.page-type-contact .body {
+  background: transparent;
+}
+
+.page-type-search .search-wrapper {
+  display: none;
+}
+
+.page-type-search .search-result-item {
+  background: none;
+}
+
+.page-type-search .pager-wrapper {
+  display: none;
+}
+
+.page-type-search .search-result_2 .border-search,
+.page-type-search .search-result_1 .border-search {
+  display: none;
+}
+
+.select-wrapp {
+  display: none;
+}
+
+.page-type-v .width-600-right {
+  width: auto;
+  float: none;
+}
+
+.title-images {
+  text-align: center;
+}
+
+.btn.btn-reg {
+  display: none;
+}
+
+.page-type-v .width-564 {
+  width: auto;
+  float: none;
+}
+
+.page-type-v .images-group-beasts {
+  display: none;
+}
+
+.page-type-v .content-wrapper h3.logo-senior-day {
+  float: none;
+  margin: 0;
+  text-align: center;
+}
+
+.gallery-wrapper {
+  display: none;
+}
+
+.page-type-v .content-col .image-min, .page-type-v .content-item-col .image-min {
+  display: none;
+}
+
+.page-type-v .content-right .content-text {
+  width: auto;
+  float: none;
+}
+
+.page-type-v .content-wrapper.first .btn-back-wrapp {
+  display: none;
+}
+
+.content-col col-left width-50 {
+  width: auto;
+  float: none;
+}
+
+.page-type-v .width-600 {
+  width: auto;
+  float: none;
+}
+
+.page-type-v .width-50 {
+  width: auto;
+}
+
+.page-type-v .col-left,
+.page-type-v .col-right {
+  float: none;
+}
+
+.page-type-map .wrapper-map .button-group {
+  display: none;
+}
+
+.page-type-1 .body .body-inner .image, .page-type-4 .body .body-inner .image {
+  display: none;
+}
+
+.page-type-6 .video-item {
+  display: none;
+}
+
+.page-type-v .content-wrapper .image-group-horizontal .image, .page-type-blog .content-wrapper .image-group-horizontal .image {
+  display: none;
+}
+
+.page-type-v .content-wrapper .width-496, .page-type-blog .content-wrapper .width-496 {
+  width: auto;
+}
+
+#main .body-content {
+  padding-top: 10px;
+}
+
+.page-type-v .content-wrapper.first .image-group .image {
+  display: none;
+}
+
+.page-type-v .content-wrapper.with-image .image {
+  display: none;
+}
+
+.page-type-v .width-600-min-right {
+  width: auto;
+  float: none;
+}
+
+.page-type-7 .content-wrapper .title {
+  display: none;
+}
+
+.page-type-v .content-wrapper .image-list {
+  display: none;
+}
+
+.page-type-sponsorship .content-wrapper.even {
+  background: none;
+}
+
+.page-type-releases .content-inner {
+  width: auto !important;
+}
+
+.share-wrapper {
+  display: none;
+}
+
+.body-shadow {
+  display: none;
+}
+
+.page-type-promo .body {
+  background: #fff;
+  background-image: none !important;
+}
+
+.content-info-wrapper.full-block .link-site {
+  display: none;
+}
+
+.content-info-wrapper.full-block .table-agenda-wrapper {
+  float: none;
+}
+
+.content-info-wrapper.full-block .content-info {
+  width: auto;
+}
+
+.content-info-wrapper.not-image .content-info {
+  width: auto;
+}
+
+.content-info-wrapper.not-image .link-site {
+  display: none;
+}
+
+.page-type-custom-xtremebulls .title-promo .logo-promo {
+  text-align: center;
+}
+
+.page-type-custom-xtremebulls .content-info {
+  float: none;
+}
+
+.page-type-custom-xtremebulls .content-info .info-text.first {
+  width: auto;
+}
+
+.page-type-custom-xtremebulls .col-left .image, .page-type-custom-xtremebulls .col-right .image {
+  display: none;
+}
+
+.page-type-custom-xtremebulls .content-custom {
+  background: transparent;
+}
+
+.page-type-custom-xtremebulls .map-ext {
+  display: none;
+}
+
+.page-type-custom-disney .content-wrapp.content-even {
+  background: transparent;
+}
+
+.page-type-custom-disney .content-wrapp {
+  color: #000;
+}
+
+.page-type-1 .body, .page-type-4 .body {
+  background: transparent;
+}
+
+.page .body-inner {
+  background: transparent;
+}
+
+.page-type-1 .body .body-inner .body-content, .page-type-4 .body .body-inner .body-content {
+  background: transparent;
+}
+
+.page-type-v .content-wrapper.first {
+  width: auto;
+  min-height: 0;
+}
+
+.page-type-v .content-wrapper a.go-to {
+  display: none;
+}
+
+.page-type-v .content-wrapper.left-aligned {
+  width: auto;
+  padding-left: 0;
+}
+
+.page-type-v .content-wrapper.even {
+  background: transparent;
+  color: #000;
+}
+
+.page-type-v .body-inner .body-content .images-group {
+  display: none;
+}
+
+.page-type-v .content-wrapper.even {
+  margin: 0;
+  padding: 0;
+}
+
+.page-type-custom-disney .content-info-wrapper {
+  width: auto;
+}
+
+.page-type-custom-disney .content-info-wrapper .content-info {
+  width: auto;
+}
+
+.page-type-3 .body .body-inner .body-content, .page-type-5 .body .body-inner .body-content, .page-type-6 .body .body-inner .body-content, .page-type-blog .body .body-inner .body-content, .page-type-search .body .body-inner .body-content, .page-type-sitemap .body .body-inner .body-content, .page-type-contact .body .body-inner .body-content {
+  background: transparent;
+}
+
+.page-type-3 .body, .page-type-5 .body, .page-type-6 .body {
+  background: transparent;
+}
+
+.btn-full-right-2 {
+  display: none;
+}
+
+.page-type-v .content-wrapper.first {
+  float: none;
+}
+
+.jcarousel-container {
+  display: none !important;
+}
+
+.btn-back-wrapp {
+  display: none;
+}
+
+.btn-print-wrapp .btn-print {
+  display: none;
+}
+
+.table-agenda-wrapper .table-header {
+  display: none;
+}
+.table-agenda-wrapper tr {
+  background: transparent;
+}
+.table-agenda-wrapper td {
+  background: transparent;
+}
+.table-agenda-wrapper .btn {
+  display: none !important;
+}
+.table-agenda-wrapper .even td {
+  background: transparent;
+}
+
+.page-type-blog .body {
+  background: transparent;
+}
+.page-type-blog .sidebar {
+  display: none;
+}
+
+.page-type-blog .body-inner .content-inner {
+  width: 100%;
+}
+
+.block-leave-comment {
+  display: none;
+}
+
+.content-info-wrapper {
+  float: none;
+}
+.content-info-wrapper h2 {
+  text-align: center;
+  color: #000;
+}
+.content-info-wrapper .content-info {
+  width: auto;
+  text-align: center;
+}
+.content-info-wrapper .more {
+  display: none;
+}
+.content-info-wrapper .info-text p {
+  color: #000;
+  text-align: left;
+  font-size: 16px;
+}
+
+.title-promo .logo-promo {
+  text-align: center;
+}
+
+.print p {
+  line-height: 18px;
+}
+.print.print-oksf a {
+  color: #000;
+  font-size: 16px;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  display: block;
+}
+.print.print-oksf site a {
+  color: #000;
+  text-decoration: none;
+  font-size: 14px;
+  margin: 0;
+}
+.print.print-oksf h2 {
+  font-size: 26px;
+  font-weight: bold;
+  margin-top: 30px;
+}
+.print.print-oksf h3 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 25px;
+  margin-bottom: 5px;
+}
+.print.print-oksf p {
+  font-size: 14px;
+}
+.print.print-oksf td:last-child {
+  padding-left: 25px;
+}
+.print.print-concert site a {
+  color: #000;
+  text-decoration: none;
+  font-size: 14px;
+}
+.print.print-concert h1, .print.print-concert h2, .print.print-concert h3, .print.print-concert h5, .print.print-concert h6 {
+  text-align: center;
+}
+.print.print-concert h1, .print.print-concert h2, .print.print-concert h6 {
+  text-transform: uppercase;
+}
+.print.print-concert h1 {
+  font-size: 48px;
+  letter-spacing: 14px;
+  margin-top: 55px;
+}
+.print.print-concert h2 {
+  font-size: 25px;
+  letter-spacing: 6px;
+}
+.print.print-concert h3 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  margin-top: 25px;
+}
+.print.print-concert h5 {
+  font-size: 18px;
+}
+.print.print-concert h6 {
+  margin-top: 50px;
+  font-style: italic;
+  letter-spacing: 2px;
+}
+.print.print-concert p {
+  margin-top: 25px;
+  font-size: 14px;
+}
+.print.print-concert p span {
+  font-size: 10px;
+  display: block;
+  text-align: center;
+  font-style: italic;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+#main .body-content {
+  padding: 0px;
+}
+
+.clear-box {
+  overflow: visible;
+}
+
+#main .width-600 {
+  width: auto;
+}
+
+#main .content-text,
+#main-wrapper #main .content-text,
+#main-wrapper #main .content-wrapper {
+  width: auto;
+  float: none;
+}
+
+.calendar-one-line {
+  display: none;
+}
+
+#main p,
+#main h5 {
+  width: auto;
+  float: none;
+}
+
+.media-youtube-video {
+  display: none;
+}
+
+.change-node-date {
+  background: none;
+}
+
+.slider-wrapper-coupon {
+  display: none;
+}
+
+.block-comments h3,
+.block-comments form {
+  display: none;
+}

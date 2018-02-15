@@ -1,0 +1,210 @@
+<?php
+/**
+ * @file module functionality
+ * Import instagram photos to nodes
+ */
+
+define('INSTAGRAM_HASHTAG', 'AGreatDealofFun');
+define('INSTAGRAM_API_URL', 'https://api.instagram.com/v1/');
+define('INSTAGRAM_CLIENT_ID', '8a808b08c325464eb6e78a103e294e72');
+define('INSTAGRAM_NODE_TYPE', 'instagram_photo');
+
+/**
+ * !!!disabled, because we can`t import and store instagram photos by instagram api term of use
+ * Implements hook_cronapi().
+ */
+function okstatefair_instagram_cronapi($op, $job = null) {
+  $items = array();
+
+  $items['okstatefair_instagram_get_photos'] = array(
+    'description' => 'Get new photos from instagram',
+    'rule' => '*/5 * * * *', // Every 5 minutes
+    'callback' => 'okstatefair_instagram_get_photos'
+  );
+
+  return $items;
+}
+
+function okstatefair_instagram_menu() {
+  $items['instagram_ban'] = array(
+    'title' => 'Instagram',
+    'type' => MENU_CALLBACK,
+    'page callback' => 'okstatefair_instagram_page_callback',
+    'access arguments' => array('okstatefair instagram demo'),
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function okstatefair_instagram_permission() {
+  return array(
+    'okstatefair instagram demo' => array(
+      'title' => t('okstatefair instagram demo.'),
+      'description' => t('okstatefair instagram demo'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_theme()
+ */
+function okstatefair_instagram_theme() {
+  $module_path = drupal_get_path('module', 'okstatefair_instagram');
+  $base = array(
+    'path' => "$module_path/theme",
+  );
+  return array(
+    'okstatefair_instagram_page' => $base + array(
+      'template' => 'okstatefair_instagram_page',
+      'variables' => array(),
+    ),
+  );
+}
+
+/**
+ * Instagram page callback
+ */
+function okstatefair_instagram_page_callback() {
+
+  $module_path = drupal_get_path('module', 'okstatefair_instagram');
+  drupal_add_js($module_path . '/js/lib/jquery.instagram.js');
+  drupal_add_js($module_path . '/js/okstatefair_instagram.js');
+  drupal_add_js(array('okstatefair_instagram' => array('client_id' => INSTAGRAM_CLIENT_ID)), 'setting');
+  drupal_add_css($module_path . '/css/instagram.css');
+
+  return theme('okstatefair_instagram_page');
+}
+
+/**
+ * Take new photos from instagram api and save to nodes.
+ */
+function okstatefair_instagram_get_photos() {
+  module_load_include('inc', 'okstatefair_instagram', 'includes/instagram_api');
+
+  $instagram = new InstagramApi(INSTAGRAM_CLIENT_ID);
+
+  $next_max_tag_id = variable_get('okstatefair_instagram_next_max_tag_id', NULL);
+
+  $result = $instagram->get_tag_media_recent(INSTAGRAM_HASHTAG, $next_max_tag_id);
+
+  foreach ($result->data as $data) {
+    if (!okstatefair_instagram_is_id_exist($data->id)) {
+      okstatefair_instagram_make_photo_node($data);
+    } else {
+      //stop pagination, we take all photos
+      variable_del('okstatefair_instagram_next_max_tag_id');
+      return;//end function
+    }
+  }
+
+  if(!empty($result->pagination->next_max_tag_id)) {
+    //setup max tag id, next request will take next part of photos
+    variable_set('okstatefair_instagram_next_max_tag_id', $result->pagination->next_max_tag_id);
+  } else {
+    //stop pagination, we take all photos
+    variable_del('okstatefair_instagram_next_max_tag_id');
+  }
+}
+
+/**
+ * Checking, if photo was imported
+ *
+ * @param $instagram_id
+ * @return mixed
+ */
+function okstatefair_instagram_is_id_exist($instagram_id) {
+  return db_select('field_data_field_instagram_id', 'i')
+    ->fields('i', array('field_instagram_id_value'))
+    ->condition('i.field_instagram_id_value', $instagram_id)
+    ->execute()
+    ->fetchField();
+}
+
+/**
+ * Create and save node from instagram data
+ * @param $instagram_data
+ */
+function okstatefair_instagram_make_photo_node($instagram_data) {
+  global $user;
+
+  if (empty($instagram_data->id)) {
+    watchdog('instagram', 'Error Import. Invalid instagram data. id is empty');
+    return;
+  }
+
+  try {
+    $node = new StdClass();
+    $node->type = INSTAGRAM_NODE_TYPE;
+    $node->title = t('Instagram: @id', array('@id' => $instagram_data->id));
+
+    $file_image = okstatefair_instagram_upload_remote_file($instagram_data->images->standard_resolution->url);
+    $node->field_instagram_image[LANGUAGE_NONE][0] = (array) $file_image;
+
+    $file_tumbnail = okstatefair_instagram_upload_remote_file($instagram_data->images->thumbnail->url);
+    $node->field_instagram_thumbnail[LANGUAGE_NONE][0] = (array) $file_tumbnail;
+
+    $node->field_instagram_link[LANGUAGE_NONE][0] = array(
+      'url' => $instagram_data->link,
+      'title' => '',
+    );
+
+    $node->field_instagram_id[LANGUAGE_NONE][0]['value'] = $instagram_data->id;
+
+    $node->language = LANGUAGE_NONE;
+    $node->uid = $user->uid;
+    $node->status = 1;
+    $node->active = 1;
+    $node->promote = 0;
+    $node->created = $instagram_data->created_time;
+
+    //dsm($node);
+    node_save($node);
+  } catch (Exception $e) {
+    watchdog('Instagram', 'Error saving photo: @message', array('@message' => $e->getMessage()));
+  }
+}
+
+/**
+ * Copy external file and save as managed file
+ *
+ * @param string $url
+ *
+ * @return obj
+ *   Return drupal file object
+ */
+function okstatefair_instagram_upload_remote_file($url) {
+  global $user;
+  $temp = file_directory_temp();
+  $basename = basename($url);
+
+  $temp_path = $temp . '/' . $basename;
+  $result = copy($url, $temp_path);
+
+  if (!$result) {
+    watchdog('instagram', 'Error copy remote file to temporary directory');
+    return FALSE;
+  }
+  $file = (object) array(
+    'uid' => $user->uid,
+    'uri' => $temp_path,
+    'filemime' => file_get_mimetype($temp_path),
+    'filename' => $basename,
+  );
+
+  // Move the file, into the Drupal file system
+  $file = file_move($file, 'public://');
+  if ($file) {
+    $file->status = FILE_STATUS_PERMANENT;
+
+    $file = file_save($file);
+  }
+  else {
+    watchdog('instagram', 'Failed to write the uploaded file to the site\'s public file folder.');
+    return FALSE;
+  }
+
+  return $file;
+}

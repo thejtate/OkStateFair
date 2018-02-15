@@ -1,0 +1,9 @@
+name = Views Exposed pager
+description = Move exposed page limit to pager section
+core = 7.x
+package = Downtown
+dependencies[] = views
+dependencies[] = views_litepager
+
+files[] = views_exposed_pager_plugin.inc
+files[] = views_exposed_pager_plugin_lite.inc

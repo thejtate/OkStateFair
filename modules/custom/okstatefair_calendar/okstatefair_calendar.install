@@ -1,0 +1,231 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the drupal_calendar_module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function okstatefair_calendar_schema() {
+  $schema['state_fair_calendar'] = array(
+    'description' => 'Denormalize some calendar items it`s required for calendar agenda block',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier for event date, the save value as field collection item id "field_sf_event_dates".',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'nid' => array(
+        'description' => 'The primary identifier for a event node.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'title' => array(
+        'description' => 'Event title',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'start_date_time' => array(
+        'description' => 'Event start date time, the same as "field_sf_event_dates_date_value"',
+        'type' => 'datetime',
+        'mysql_type' => 'datetime',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'varchar',
+        'sqlsrv_type' => 'smalldatetime',
+        'not null' => FALSE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'location' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The location name.',
+        'translatable' => TRUE,
+      ),
+      'location_tid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The location taxonomy tid.',
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'node_id' => array('nid'),
+    )
+  );
+
+  $schema['state_fair_agenda_links'] = array(
+    'description' => 'User agenda events sharing',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'data' => array(
+        'description' => 'Serialized data, array of events ids',
+        'type' => 'text',
+        'not null' => TRUE,
+        'size' => 'big',
+        'description' => 'Description of the category',
+      ),
+      'hash' => array(
+        'type' => 'varchar',
+        'length' => 32, // The length of an MD5 hash.
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The hash of the source item.',
+      ),
+    ),
+
+    'primary key' => array('id'),
+    'unique keys' => array(
+      'hash' => array('hash'),
+    )
+  );
+
+  $schema['state_fair_featured_multiple'] = array(
+    'description' => 'Help table for multiple featured events.',
+    'fields' => array(
+      'original_val' => array(
+        'description' => 'Featured field value',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'val' => array(
+        'description' => 'Values for the given original field value',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('original_val', 'val'),
+    'indexes' => array(
+      'original_val' => array('original_val'),
+    )
+  );
+
+  return $schema;
+}
+
+/**
+ * Increase module weight to 50
+ */
+function okstatefair_calendar_update_7001() {
+  db_update('system')
+    ->fields(array('weight' => 50))
+    ->condition('name', 'okstatefair_calendar', '=')
+    ->execute();
+}
+
+/**
+ * Add state_fair_agenda_links db table
+ */
+function okstatefair_calendar_update_7002() {
+
+  $schema['state_fair_agenda_links'] = array(
+    'description' => 'User agenda events sharing',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'data' => array(
+        'description' => 'Serialized data, array of events ids',
+        'type' => 'text',
+        'not null' => TRUE,
+        'size' => 'big',
+        'description' => 'Description of the category',
+      ),
+      'hash' => array(
+        'type' => 'varchar',
+        'length' => 32, // The length of an MD5 hash.
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The hash of the source item.',
+      ),
+    ),
+
+    'primary key' => array('id'),
+    'unique keys' => array(
+      'hash' => array('hash'),
+    )
+  );
+
+  db_create_table('state_fair_agenda_links', $schema['state_fair_agenda_links']);
+}
+
+/**
+ * Add state_fair_calendar location fields
+ */
+function okstatefair_calendar_update_7003() {
+
+  $spec1 = array(
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => TRUE,
+    'default' => '',
+    'description' => 'The location name.',
+    'translatable' => TRUE,
+  );
+  db_add_field('state_fair_calendar', 'location', $spec1);
+
+  $spec2 = array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 0,
+    'description' => 'The location taxonomy tid.',
+  );
+
+  db_add_field('state_fair_calendar', 'location_tid', $spec2);
+}
+
+/**
+ * Add state_fair_featured_multiple table
+ */
+function okstatefair_calendar_update_7004() {
+  $schema['state_fair_featured_multiple'] = array(
+    'description' => 'Help table for multiple featured events.',
+    'fields' => array(
+      'original_val' => array(
+        'description' => 'Featured field value',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'val' => array(
+        'description' => 'Values for the given original field value',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('original_val', 'val'),
+    'indexes' => array(
+      'original_val' => array('original_val'),
+    )
+  );
+
+  db_create_table('state_fair_featured_multiple', $schema['state_fair_featured_multiple']);
+  db_insert('state_fair_featured_multiple')
+    ->fields(array('original_val', 'val'))
+    ->values(array(1, 1))
+    ->values(array(1, 0))
+    ->values(array(0, 0))
+    ->execute();
+}

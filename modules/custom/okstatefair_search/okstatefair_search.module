@@ -1,0 +1,416 @@
+<?php
+
+
+/**
+ * Implements hook_search_info().
+ */
+function okstatefair_search_search_info() {
+  return array(
+    'title' => 'Content',
+    'path' => 'okstatefair_search',
+  );
+}
+
+/**
+ * Implements hook_search_access().
+ */
+function okstatefair_search_search_access() {
+  return user_access('access content');
+}
+
+/**
+ * Implements hook_search_reset().
+ */
+function okstatefair_search_search_reset() {
+  db_update('search_dataset')
+    ->fields(array('reindex' => REQUEST_TIME))
+    ->condition('type', 'node')
+    ->execute();
+}
+
+/**
+ * Implements hook_search_status().
+ */
+function okstatefair_search_search_status() {
+  $total = db_query('SELECT COUNT(*) FROM {node}')->fetchField();
+  $remaining = db_query("SELECT COUNT(*) FROM {node} n LEFT JOIN {search_dataset} d ON d.type = 'node' AND d.sid = n.nid WHERE d.sid IS NULL OR d.reindex <> 0")->fetchField();
+  return array('remaining' => $remaining, 'total' => $total);
+}
+
+/**
+ * Implements hook_search_admin().
+ */
+function okstatefair_search_search_admin() {
+  // Output form for defining rank factor weights.
+  $form['content_ranking'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Content ranking'),
+  );
+  $form['content_ranking']['#theme'] = 'node_search_admin';
+  $form['content_ranking']['info'] = array(
+    '#value' => '<em>' . t('The following numbers control which properties the content search should favor when ordering the results. Higher numbers mean more influence, zero means the property is ignored. Changing these numbers does not require the search index to be rebuilt. Changes take effect immediately.') . '</em>'
+  );
+
+  // Note: reversed to reflect that higher number = higher ranking.
+  $options = drupal_map_assoc(range(0, 10));
+  foreach (module_invoke_all('ranking') as $var => $values) {
+    $form['content_ranking']['factors']['node_rank_' . $var] = array(
+      '#title' => $values['title'],
+      '#type' => 'select',
+      '#options' => $options,
+      '#default_value' => variable_get('node_rank_' . $var, 0),
+    );
+  }
+  return $form;
+}
+
+/**
+ * Implements hook_search_execute().
+ */
+function okstatefair_search_search_execute($keys = NULL, $conditions = NULL) {
+  // Build matching conditions
+  //type:arena,barns,cu,feed_bedding,homesubpark,rvpark,state_fair_park_event,striped_sfp,ticket_office,video,expo,blogpost,commercials,contact,employment,mission,sponsorship
+  //blogpost,commercials,contact,employment,mission,sponsorship
+  //agtropolis,academy,arm_wrestling,artex,article,arts,bandday,barnyard,page,cfe,connection,discount,dr_pepper,equine,faq,general,general_sf,homesub,home,hours_admissions,misc,opening,pageants,parking,sf_space_sales,senior_day,shows,exhibits,state_fair_event,volunteer,wine_competition,blogpost,commercials,contact,employment,mission,sponsorship
+  $keys_origin = strtolower($keys);
+  $keys = htmlentities($keys);
+  if ($_GET['page_s'] == 'statefairpark') {
+    $keys .= ' type:arena,barns,cu,feed_bedding,homesubpark,rvpark,state_fair_park_event,striped_sfp,ticket_office,video,expo,blogpost,commercials,contact,employment,mission,sponsorship,resources,press,photos';
+  }
+  if ($_GET['page_s'] == 'statefair') {
+    $keys .= ' type:food,vendor,agtropolis,academy,arm_wrestling,artex,article,arts,bandday,barnyard,page,cfe,connection,discount,dr_pepper,equine,faq,general,general_sf,homesub,home,hours_admissions,misc,opening,pageants,parking,sf_space_sales,senior_day,shows,exhibits,state_fair_event,volunteer,wine_competition,blogpost,commercials,contact,employment,mission,sponsorship,resources,press,photos';
+  }
+  
+  $query = db_select('search_index', 'i', array('target' => 'slave'))->extend('SearchQuery')->extend('PagerDefault');
+  $query->join('node', 'n', 'n.nid = i.sid');
+  $query
+    ->condition('n.status', 1)
+    ->addTag('node_access')
+    ->searchExpression($keys, 'node');
+
+  // Insert special keywords.
+  $query->setOption('type', 'n.type');
+  $query->setOption('language', 'n.language');
+  if ($query->setOption('term', 'ti.tid')) {
+    $query->join('taxonomy_index', 'ti', 'n.nid = ti.nid');
+  }
+  // Only continue if the first pass query matches.
+  if (!$query->executeFirstPass()) {
+    //return array();
+  }
+
+  // Add the ranking expressions.
+  _node_rankings($query);
+
+  // Load results.
+  $find = $query
+    ->limit(10)
+    ->execute();
+  $results = array();
+  
+    if (strpos($keys_origin, 'finder') !== FALSE || strpos($keys_origin, 'food') !== FALSE) {
+       $results[] = okstatefair_search_custom_results('food-finder', t('Food Finder'), '<strong>Food Finder</strong>', 'und');
+    }
+    if (strpos($keys_origin, 'shop') !== FALSE) {
+       $results[] = okstatefair_search_custom_results('shop', t('Shop'), '<strong>Shop</strong>', 'und');
+    }
+    if (strpos($keys_origin, 'blog') !== FALSE) {
+       $results[] = okstatefair_search_custom_results('blog', t('BLOG'), '<strong>Blog</strong>', 'und');
+    }
+    if (strpos($keys_origin, 'press') !== FALSE || strpos($keys_origin, 'releases') !== FALSE) {
+       $results[] = okstatefair_search_custom_results('press', t('Latest Press Releases'), '<strong>Latest Press Releases</strong>', 'und');
+    }
+    
+  foreach ($find as $item) {
+    // Render the node.
+    $node = node_load($item->sid);
+    $build = node_view($node, 'search_result');
+    $custom_url = '';
+    unset($build['#theme']);
+    $node->rendered = drupal_render($build);
+
+    // Fetch comments for snippet.
+    $node->rendered .= ' ' . module_invoke('comment', 'node_update_index', $node);
+
+    $extra = module_invoke_all('node_search_result', $node);
+
+    $uri = entity_uri('node', $node);
+    
+    switch ($node->type) {
+      case 'food':
+        if (isset ($node->field_vendors[entity_language('node', $node)][0]['value'])){
+          $items = (field_view_value('node', $node, 'field_vendors', $node->field_vendors['und'][0]));
+          $tid = $items['entity']['field_collection_item'][$node->field_vendors[entity_language('node', $node)][0]['value']]['field_vendors_category']['#items'][0]['tid'];
+          $custom_url = url('food-finder', array('absolute' => TRUE, 'query' => array('field_vendors_category_tid' => $tid)));
+        }
+
+        break;
+      case 'vendor':
+        $custom_url = url('shop', array('absolute' => TRUE, 'query' => array('page' => okstatefair_search_views_get_item_page_nr($node->nid, 'vendors', 'Page'))));
+        break;
+      case 'press':
+         $custom_url = url('press', array('absolute' => TRUE, 'query' => array('page' => okstatefair_search_views_get_item_page_nr($node->nid, 'press', 'page'))));
+         $GLOBALS['pager_total_items'][0]++;
+         $results[] = array(
+            'link' => url($uri['path'], array_merge($uri['options'], array('absolute' => TRUE))),
+            'type' => check_plain(node_type_get_name($node)),
+            'title' => $node->title,
+            'user' => theme('username', array('account' => $node)),
+            'date' => $node->changed,
+            'node' => $node,
+            'extra' => $extra,
+            'score' => $item->calculated_score,
+            'snippet' => search_excerpt($keys, $node->rendered),
+            'language' => entity_language('node', $node),
+            'custom_url' => '', 
+          );
+        break;
+    }
+    
+    $results[] = array(
+      'link' => url($uri['path'], array_merge($uri['options'], array('absolute' => TRUE))),
+      'type' => check_plain(node_type_get_name($node)),
+      'title' => $node->title,
+      'user' => theme('username', array('account' => $node)),
+      'date' => $node->changed,
+      'node' => $node,
+      'extra' => $extra,
+      'score' => $item->calculated_score,
+      'snippet' => search_excerpt($keys, $node->rendered),
+      'language' => entity_language('node', $node),
+      'custom_url' => $custom_url, 
+    );
+    
+    if ($node->type == 'blogpost') {
+      $GLOBALS['pager_total_items'][0]++;
+      $results[] = array(
+        'link' => url($uri['path'], array_merge($uri['options'], array('absolute' => TRUE))),
+        'type' => check_plain(node_type_get_name($node)),
+        'title' => $node->title,
+        'user' => theme('username', array('account' => $node)),
+        'date' => $node->changed,
+        'node' => $node,
+        'extra' => $extra,
+        'score' => $item->calculated_score,
+        'snippet' => search_excerpt($keys, $node->rendered),
+        'language' => entity_language('node', $node),
+        'blog_post' => 1,
+        'blog_post_url' => url('blog', array('absolute' => TRUE, 'query' => array('page' => okstatefair_search_views_get_item_page_nr($node->nid, 'blog', 'Page')))),
+      );
+    }
+  }
+  return $results;
+}
+
+
+/**
+ * Form submission handler for index button on search_admin_settings_form().
+ */
+function okstatefair_search_index_submit($form, &$form_state) {
+//  module_invoke('node', 'update_index');
+  drupal_register_shutdown_function('search_update_totals');
+  module_invoke('okstatefair', 'update_index');
+}
+
+
+function okstatefair_search_form_alter(&$form, &$form_state, $form_id) {
+  global $user;
+  switch ($form_id) {
+    case 'search_admin_settings':
+      $form['status']['idex'] = array('#type' => 'submit', '#value' => t('index site'), '#submit' => array('okstatefair_search_index_submit'));
+      break;
+    case 'search_form':
+
+      $form['#attributes']['class'][] = 'search-block';
+      $form['basic']['keys']['#attributes']['placeholder'] = 'What are you looking for?';
+      $form['basic']['keys']['#attributes']['class'][] = 'serch-input';
+      $form['basic']['submit']['#attributes']['class '][] = 'search-submit';
+      $form['basic']['submit']['#attributes']['class '][] = 'form-submit';
+      $form['basic']['keys']['#title'] = '';
+      $form['#prefix'] = '<div class="search-wrapper">';
+      $form['#suffix'] = '</div>';
+      $form['#submit'][0] = 'okstatefair_search_form_submit';
+        if (isset ($_GET['page_s'])) {
+          if ($_GET['page_s'] == 'statefair' || $_GET['page_s'] == 'statefairpark') {
+            $form['#action'] = '/search/okstatefair_search?page_s=' . $_GET['page_s'];
+          } 
+        } else {
+          if (isset ($form_state['build_info']['args'][0])){
+            if ($form_state['build_info']['args'][0] == 'header_sf') {
+              $form['#action'] = '/search/okstatefair_search?page_s=statefair';
+            } elseif ($form_state['build_info']['args'][0] == 'header_sfp') { 
+              $form['#action'] = '/search/okstatefair_search?page_s=statefairpark';
+            }
+          }
+          
+        }  
+        
+      if (isset ($_GET['page_s'])) {
+        if ($_GET['page_s'] == 'statefair' || $_GET['page_s'] == 'statefairpark') {
+          $form['#page'] = $_GET['page_s'];
+        } 
+      }  
+      unset($form['advanced']);
+      break;
+  }
+
+}
+
+/**
+ * Process a search form submission.
+ */
+function okstatefair_search_form_submit($form, &$form_state) {
+  $keys = $form_state['values']['processed_keys'];
+  if ($keys == '') {
+    form_set_error('keys', t('Please enter some keywords.'));
+    // Fall through to the form redirect.
+  }
+
+  
+  $form_state['redirect'] = array($form_state['action'] . '/' . $keys);  
+  if (isset ($form['#page'])) {
+    if ($form['#page'] == 'statefair' || $form['#page'] == 'statefairpark') {
+      $form_state['redirect'] = array($form_state['action'] . '/' . $keys, array('query' => array('page_s' => $form['#page'])));
+    } 
+  }  
+  if (isset ($_GET['page_s'])) {
+    if ($_GET['page_s'] == 'statefair' || $_GET['page_s'] == 'statefairpark') {
+      $form_state['redirect'] = array($form_state['action'] . '/' . $keys, array('query' => array('page_s' => $_GET['page_s'])));
+    } 
+  }  
+
+}
+
+
+function okstatefair_search_views_get_item_page_nr($nid, $name, $display_id = NULL) {
+  $args = func_get_args();
+  array_shift($args); // remove $nid
+  array_shift($args); // remove $name
+
+  if (count($args)) {
+    array_shift($args); // remove $display_id
+  }
+
+  $view = views_get_view($name);
+  if (is_object($view)) {
+    if (is_array($args)) {
+      $view->set_arguments($args);
+    }
+
+    if (is_string($display_id)) {
+      $view->set_display($display_id);
+    }
+    else {
+      $view->init_display();
+    }
+
+    $view->pre_execute();
+    $view->build();
+    // Get the views query.
+    $query = $view->build_info['query'];
+
+    // Get the return assoc array with return objects, keyed by nids.
+    $nids = $query->execute()->fetchAllAssoc('nid');
+
+    // Get position of nid in nids array.
+    $index = array_search($nid, array_keys($nids));
+
+    // Get amount of items per page.
+//    $items_per_page = $view->display[$view->current_display]->handler->get_option('items_per_page'); // As seen at http://api.drupal.org/api/views/includes%21view.inc/function/view%3A%3Aexecute/7.
+    $items_per_page = $view->query->pager->options['items_per_page'];
+
+    // Calculate page number.
+    $page_nr = $index === null ? 0 : intval($index / $items_per_page);
+    
+    return $page_nr;
+  }
+  else {
+    return 0;
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Fires hook_update_index() in all modules and cleans up dirty words.
+ *
+ * @see search_dirty()
+ */
+function okstatefair_search_cron() {
+  drupal_register_shutdown_function('search_update_totals');
+  module_invoke('okstatefair', 'update_index');
+}
+
+/**
+ * Implements hook_update_index().
+ */
+function okstatefair_update_index() {
+  $limit = (int)variable_get('search_cron_limit', 100);
+
+  $result = db_query_range("SELECT n.nid FROM {node} n LEFT JOIN {search_dataset} d ON d.type = 'node' AND d.sid = n.nid WHERE d.sid IS NULL OR d.reindex <> 0 ORDER BY d.reindex ASC, n.nid ASC", 0, $limit, array(), array('target' => 'slave'));
+
+  foreach ($result as $node) {
+    _okstatefair_index_node($node);
+  }
+}
+
+/**
+ * Indexes a single node.
+ *
+ * @param $node
+ *   The node to index.
+ */
+function _okstatefair_index_node($node) {
+  
+  $node = node_load($node->nid);
+
+  // Save the changed time of the most recent indexed node, for the search
+  // results half-life calculation.
+  variable_set('node_cron_last', $node->changed);
+
+  // Render the node.
+  $build = node_view($node, 'search_index');
+  unset($build['#theme']);
+  $node->rendered = drupal_render($build);
+
+  $text = '<h1>' . check_plain($node->title) . '</h1>' . $node->rendered;
+  switch ($node->type) {
+    case 'photos':
+      foreach ($node->field_photos_image[entity_language('node', $node)] as $value) {
+        $text .= '<p>' . $value['alt'] . '</p>';
+      }
+      break;
+    case 'vendor':
+        $text .= ' ' . t('Shop') . ' ';
+      break;
+    case 'food':
+        $text .= '<h2>' . 'Finder' . '</h2> ';
+        $text .= '<h2>' . t('Food') . '</h2>';
+      break;
+  }
+
+  // Fetch extra data normally not visible
+  $extra = module_invoke_all('node_update_index', $node);
+  foreach ($extra as $t) {
+    $text .= $t;
+  }
+  // Update index
+  search_index($node->nid, 'node', $text);
+}
+
+
+function okstatefair_search_custom_results($link, $title, $snippet, $language) {
+  return array(
+        'link' => url($link, array('absolute' => TRUE)),
+//        'type' => '',
+        'title' => $title,
+        'user' => '',
+        'date' => '',
+        'node' => '',
+        'extra' => '',
+        'score' => '',
+        'snippet' => $snippet,
+        'language' => $language,
+        'custom_url' => '', 
+      ); 
+}

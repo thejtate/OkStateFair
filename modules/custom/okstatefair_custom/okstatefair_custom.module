@@ -1,0 +1,1557 @@
+<?php
+
+/**
+ * @file
+ * Custom site functionality
+ */
+define('NODEQUE_SENIOR_EXEC', 1);
+define('OKSTATEFAIR_VIEWS_CALENDAR_HTIS_WEEK', 'calendar_this_week');
+define('OKSTATEFAIR_VIEWS_CALENDAR_COMING_UP', 'calendar_coming_up');
+define('OKSTATEFAIR_VIEWS_CALENDAR_STATE_FAIR_PARK_CALENDAR', 'state_fair_park_calendar');
+define('OKSTATEFAIR_VIEWS_CALENDAR_STATE_FAIR_CALENDAR_CHOSEN_DATE', 'calendar_chosen_date');
+define('OKSTATEFAIR_VIEWS_CALENDAR_STATE_FAIR_CALENDAR_CHOSEN_MONTH', 'calendar_chosen_month');
+define('OKSTATEFAIR_VIEWS_CALENDAR_STATE_FAIR_PARK_CALENDAR_PAGE_PATH', 'calendar-sfp');
+define('OKSTATEFAIR_VIEWS_CALENDAR_STATE_FAIR_PARK_CALENDAR_MOBILE_PAGE_PATH', 'calendar-sfp-mobile');
+define('OKSTATEFAIR_VIEWS_CALENDAR_STATE_FAIR_CALENDAR', 'state_fair_calendar');
+define('OKSTATEFAIR_VIEWS_CALENDAR_STATE_FAIR_MOBILE_CALENDAR', 'mobile_state_fair_calendar');
+define('XTREME_BULLS', 1540);
+define('XTREME_JN', 11515);
+define('XTREME_JOSH', 17742);
+define('DISNEP_NID', 1539);
+define('MAP_NID', 3033);
+define('DISNEP_NEW_NID', 4942);
+define('WEBFORM__NID', 3006);
+define('COMING_SOON', 1972);
+define('COMING_SOON_SFP', 2350);
+define('COMING_SOON_SFP2', 3644);
+define('XTREME_NEW', 17742);
+define('XTREME_CLAY', 1541);
+define('XTREME_MONTGOMERY_GENTRY', 15001);
+define('XTREME_ELI_YOUNG_BAND', 15003);
+// define('WEBFORM_GOLDEN_TICKET_NID', 5639);
+define('WEBFORM_GOLDEN_TICKET_NID', 5770);
+define('WEBFORM_GOLDEN_TICKET_NEWSLETTER_NID', 5771);
+// define('WEBFORM_GOLDEN_TICKET_NEWSLETTER_NID', 5641);
+define('WEBFORM_NEWSLETTER_NID', 3713);
+define('MODERATOR_ROLE_ID', 5);
+define('MANAGER_ROLE_ID', 4);
+define('NEWMANAGER_ROLE_ID', 6);
+define('CHICKASAW_MLID', 556);
+define('SEPTEMBER_MONTH', 9);
+define('FAIR_START', 14);
+define('BLOCK_VOC_VID', 'blog_categories');
+define('ADMIN_FF_LIST', 'admin/food-list-new');
+$includes_path = drupal_get_path('module', 'okstatefair_custom') . '/includes/';
+require_once $includes_path . 'okstatefair.special_events.inc';
+
+function okstatefair_custom_changedate_submit() {
+
+  $result = db_select('node', 'n')
+  ->fields('n', array('nid'))
+  ->condition('n.type', 'state_fair_event')
+  ->execute()
+  ->fetchCol();
+
+  foreach($result as $nid){
+    $node = node_load($nid);
+    foreach($node->field_sf_event_dates[LANGUAGE_NONE] as $field_collection_item_values){
+      $field_collection_item_value = $field_collection_item_values['value'];
+      $field_collection_item = entity_load('field_collection_item', array($field_collection_item_value));
+      foreach($field_collection_item as $items){
+        if(isset ($items->field_sf_event_dates_date[LANGUAGE_NONE][0]['value']) && ($items->field_sf_event_dates_date[LANGUAGE_NONE][0]['value'] != NULL)) {
+          $items->field_sf_event_dates_date[LANGUAGE_NONE][0]['value'] = str_replace('2013', '2014', $items->field_sf_event_dates_date[LANGUAGE_NONE][0]['value']);
+        }
+        if(isset ($items->field_sf_event_dates_date[LANGUAGE_NONE][0]['value2']) && ($items->field_sf_event_dates_date[LANGUAGE_NONE][0]['value2'] != NULL)) {
+          $items->field_sf_event_dates_date[LANGUAGE_NONE][0]['value2'] = str_replace('2013', '2014', $items->field_sf_event_dates_date[LANGUAGE_NONE][0]['value2']);
+        }
+        $items->save();
+      }
+    }
+  }
+  drupal_set_message('Done!', 'status');
+}
+
+function okstatefair_custom_changedate() {
+  $form = array();
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Start change date.',
+  );
+  return $form;
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function okstatefair_custom_menu() {
+  $items['admin/okstatefair/changedate'] = array(
+    'title' => 'change date',
+    'description' => 'change date',
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('okstatefair_custom_changedate'),
+    'access arguments' => array('custom site settings form access'),
+  );
+  $items['okstatefair/generate_sfp_feed'] = array(
+    'title' => 'Generate SFP feed',
+    'description' => '',
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'okstatefair_custom_generate_sfp_feed_page',
+    'access arguments' => array('access content'),
+  );
+  $items['okstatefair/generate_fairpark_feed'] = array(
+    'title' => 'Generate FairPark feed',
+    'description' => '',
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'okstatefair_custom_generate_fairpark_feed_page',
+    'access arguments' => array('access content'),
+  );
+  $items['admin/okstatefair/config'] = array(
+    'title' => 'Okstatefair Configuration',
+    'description' => 'Okstatefair Configuration page',
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('okstatefair_custom_site_setings_form'),
+    'access arguments' => array('custom site settings form access'),
+    'file' => 'okstatefair_custom.form.inc',
+    'file path' => drupal_get_path('module', 'okstatefair_custom') . '/includes',
+  );
+  $items['okstatefair/mobile_menu'] = array(
+    'title' => 'Okstatefair Mobile pages',
+    'description' => 'Okstatefair Mobile pages',
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'okstatefair_custom_mobile_menu_page',
+    'access arguments' => array('custom site settings form access'),
+    'file' => 'okstatefair_custom.mobile_menu.inc',
+    'file path' => drupal_get_path('module', 'okstatefair_custom') . '/includes', );
+  $items['site/map'] = array(
+    'title' => 'Sitemap',
+    'description' => 'Sitemap',
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'okstatefair_custom_site_map_page',
+    'access arguments' => array('access content'),
+    'file' => 'okstatefair_custom.sitemap.inc',
+    'file path' => drupal_get_path('module', 'okstatefair_custom') . '/includes',
+  );
+
+  $items['taxonomy/term/%taxonomy_term/image'] = array(
+    //'title' => 'Okstatefair calendar events export',
+    //'description' => 'Okstatefair calendar events export',
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'okstatefair_custom_term_image',
+    'page arguments' => array(2),
+    'access arguments' => array('access content'),
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function okstatefair_custom_permission() {
+  return array(
+    'custom site settings form access' => array(
+      'title' => t('Custom settings form access')
+    ),
+    'access future nodes links' => array(
+      'title' => t('Access future nodes links'),
+    ),
+    'okstate custom view food finder' => array(
+      'title' => t('Allow to view Food Finder, mobile and desktop.'),
+      'description' => t('View Food Finder, otherwise show coming soon message.'),
+    ),
+    'okstate custom view vendors finder' => array(
+      'title' => t('Allow to view Vendors, mobile and desktop.'),
+      'description' => t('View Vendors, otherwise show coming soon message.'),
+    ),
+  );
+}
+
+function okstatefair_custom_page_alter(&$page) {
+  if (isset($vars['node'])) {
+    $node = $vars['node'];
+  }
+
+//  if (isset($node)) {
+//    switch ($node->type) {
+//
+//    }
+//  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function okstatefair_custom_preprocess_page(&$vars) {
+
+  if (isset($vars['tabs']['#primary'][1]) && ($vars['tabs']['#primary'][1]['#link']['href'] == 'node/1973/draft')) {
+    $vars['tabs']['#primary'][1]['#link']['href'] = 'node/1539/draft_disney';
+  }
+
+  global $user;
+  if ($user->uid == 0)
+    unset($vars['tabs']['#primary']);
+  if (!drupal_is_front_page()) {
+    $vars['social_buttons'] = get_social_links();
+  }
+  if (!empty($vars['tabs']['#primary']) && in_array('page__admin__content__comment__approval', $vars['theme_hook_suggestions'])) {
+    foreach ($vars['tabs']['#primary'] as $key => $val) {
+      if ($vars['tabs']['#primary'][$key]['#link']['page_callback'] == 'webform_admin_content') {
+        if (array_key_exists(MODERATOR_ROLE_ID, $user->roles) || array_key_exists(MANAGER_ROLE_ID, $user->roles)) {
+          unset($vars['tabs']['#primary'][$key]);
+          //$vars['tabs']['#primary'][$key]['#link']['href'] = url('press', array('absolute' => TRUE));
+        }
+      }
+    }
+  }
+  if (!empty($vars['tabs']['#primary']) && in_array('page__comment__edit', $vars['theme_hook_suggestions'])) {
+    if (array_key_exists(MODERATOR_ROLE_ID, $user->roles) || array_key_exists(MANAGER_ROLE_ID, $user->roles)) {
+      unset($vars['tabs']['#primary']);
+    }
+  }
+  if (!empty($vars['tabs']['#primary']) && in_array('page__admin__structure__taxonomy__other__add', $vars['theme_hook_suggestions'])) {
+    if (array_key_exists(MODERATOR_ROLE_ID, $user->roles) || array_key_exists(MANAGER_ROLE_ID, $user->roles) || array_key_exists(NEWMANAGER_ROLE_ID, $user->roles)) {
+      unset($vars['tabs']['#primary']);
+    }
+  }
+  $module_path = drupal_get_path('module', 'okstatefair_custom');
+  drupal_add_js($module_path . '/js/custom.js');
+  if (isset($vars['node'])) {
+    $node = $vars['node'];
+    if (in_array('moderator', $user->roles)) {
+      if (!empty($vars['tabs']['#primary'])) {
+        foreach ($vars['tabs']['#primary'] as $key => $val) {
+          if ($vars['tabs']['#primary'][$key]['#link']['page_callback'] == 'workbench_moderation_node_history_view') {
+            $vars['tabs']['#primary'][$key]['#link']['access'] = FALSE;
+          }
+        }
+      }
+    }
+    switch ($node->type) {
+      case 'map':
+        $uri = $node->field_map_image[LANGUAGE_NONE]['0']['uri'];
+        $print_css_include_link = '<link href="' . url($module_path . '/css/print-map.css', array('query' => array('ver' => '1'))) . '" rel="stylesheet" media="print" type="text/css">';
+        drupal_add_js(array('okstatefair_custom' => array('print_css_link_map' => $print_css_include_link, 'img_url' => file_create_url($uri))), 'setting');
+        break;
+      case 'homesub':
+        if (!empty($vars['tabs']['#primary'])) {
+          foreach ($vars['tabs']['#primary'] as $key => $val) {
+            if ($vars['tabs']['#primary'][$key]['#link']['page_callback'] == 'node_page_view') {
+              $vars['tabs']['#primary'][$key]['#link']['href'] = url('', array('fragment' => 'oklahoma-state-fair', 'absolute' => TRUE));
+            }
+          }
+        }
+        break;
+      case 'xtreme_subpage':
+        if (!empty($vars['tabs']['#primary'])) {
+          foreach ($vars['tabs']['#primary'] as $key => $val) {
+            if ($vars['tabs']['#primary'][$key]['#link']['page_callback'] == 'node_page_view') {
+              $vars['tabs']['#primary'][$key]['#link']['href'] = url('node/' . XTREME_BULLS, array('absolute' => TRUE));
+            }
+          }
+        }
+        break;
+      case 'disnep_subpage':
+        if (!empty($vars['tabs']['#primary'])) {
+          foreach ($vars['tabs']['#primary'] as $key => $val) {
+            if ($vars['tabs']['#primary'][$key]['#link']['page_callback'] == 'node_page_view') {
+              $vars['tabs']['#primary'][$key]['#link']['href'] = url('node/' . DISNEP_NID, array('absolute' => TRUE));
+            }
+          }
+        }
+        break;
+      case 'homesubpark':
+        if (!empty($vars['tabs']['#primary'])) {
+          foreach ($vars['tabs']['#primary'] as $key => $val) {
+            if ($vars['tabs']['#primary'][$key]['#link']['page_callback'] == 'node_page_view') {
+              $vars['tabs']['#primary'][$key]['#link']['href'] = url('', array('fragment' => 'state-fair-park', 'absolute' => TRUE));
+            }
+          }
+        }
+        break;
+      case 'food':
+        $field = field_get_items('node', $vars['node'], 'field_vendors');
+        $value = field_view_value('node', $vars['node'], 'field_vendors', $field[0]);
+        $query = array();
+        if (isset($value['entity']['field_collection_item'][$field[0]['value']]['field_vendors_category']['#items'][0]['tid'])) {
+          $tid = $value['entity']['field_collection_item'][$field[0]['value']]['field_vendors_category']['#items'][0]['tid'];
+          if (!empty($tid)) {
+            $query = array('field_vendors_category_tid' => $tid);
+          }
+        }
+        $url = url('food-finder', array('query' => $query, 'absolute' => TRUE));
+        if (!empty($vars['tabs']['#primary'])) {
+          foreach ($vars['tabs']['#primary'] as $key => $val) {
+            if ($vars['tabs']['#primary'][$key]['#link']['page_callback'] == 'node_page_view' && !empty($url)) {
+              $vars['tabs']['#primary'][$key]['#link']['href'] = $url;
+              $vars['tabs']['#primary'][$key]['#link']['title'] = t('View Food Finder');
+            }
+          }
+        }
+
+        break;
+      case 'media_reference':
+        $query = db_select('field_data_field_sf_event_media', 'f');
+        $query->fields('f', array('entity_id'));
+        $query->condition('field_sf_event_media_nid', $vars['node']->nid);
+        $result = $query->execute()->fetchAll();
+        if (!empty($result[0]->entity_id)) {
+          $nid = $result[0]->entity_id;
+        }
+        if (!empty($vars['tabs']['#primary'])) {
+          foreach ($vars['tabs']['#primary'] as $key => $val) {
+            if ($vars['tabs']['#primary'][$key]['#link']['page_callback'] == 'node_page_view' && !empty($nid)) {
+              $vars['tabs']['#primary'][$key]['#link']['href'] = url('node/' . $nid, array('absolute' => TRUE));
+            }
+          }
+        }
+        break;
+      case 'press':
+        if (!empty($vars['tabs']['#primary'])) {
+          foreach ($vars['tabs']['#primary'] as $key => $val) {
+            if ($vars['tabs']['#primary'][$key]['#link']['page_callback'] == 'node_page_view') {
+              if (array_key_exists(MODERATOR_ROLE_ID, $user->roles) || array_key_exists(MANAGER_ROLE_ID, $user->roles) || array_key_exists(NEWMANAGER_ROLE_ID, $user->roles)) {
+                unset($vars['tabs']['#primary'][$key]);
+                //$vars['tabs']['#primary'][$key]['#link']['href'] = url('press', array('absolute' => TRUE));
+              }
+            }
+          }
+        }
+        break;
+      case 'shop_main_page':
+        if (!empty($vars['tabs']['#primary'])) {
+          foreach ($vars['tabs']['#primary'] as $key => $val) {
+            if ($vars['tabs']['#primary'][$key]['#link']['page_callback'] == 'node_page_view') {
+              $vars['tabs']['#primary'][$key]['#link']['href'] = url('shop', array('absolute' => TRUE));
+            }
+          }
+        }
+        break;
+      default:
+
+        break;
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function okstatefair_custom_preprocess_node(&$vars) {
+  $node = $vars['node'];
+  $data_line = array();
+  switch ($node->type) {
+    case 'home' :
+      $vars['social_buttons'] = get_social_links();
+      $vars['tickets'] = variable_get('tickets', '');
+      $search_box = drupal_get_form('search_form');
+      $vars['search'] = drupal_render($search_box);
+      break;
+    case 'barnyard' :
+    case 'general_sf' :
+      $vars['tickets'] = variable_get('tickets', '');
+      break;
+  }
+}
+
+function get_social_links() {
+  $items = array();
+  $social['facebook'] = variable_get('facebook', '');
+  $social['instagram'] = variable_get('instagram', '');
+  $social['twitter'] = variable_get('twitter', '');
+  $social['pinterest'] = variable_get('pinterest', '');
+  $social['youtube'] = variable_get('youtube', '');
+  foreach ($social as $k => $column) {
+    if (!empty($column)) {
+      $items[] = array(
+        'data' => l('', $column),
+        'class' => array($k),
+      );
+    }
+  }
+  $social_buttons = theme('item_list', array('items' => $items, 'title' => '', 'type' => 'ul', 'attributes' => array('class' => array('social-buttons'))));
+
+  return $social_buttons;
+}
+
+/**
+ * Returns query
+ */
+function drupal_http_build_query_custom(array $query, $parent = '') {
+  $params = array();
+
+  foreach ($query as $key => $value) {
+    $key = ($parent ? $parent . '[' . rawurlencode($key) . ']' : rawurlencode($key));
+
+    // Recurse into children.
+    if (is_array($value)) {
+      $params[] = drupal_http_build_query_custom($value, $key);
+    }
+    // If a query parameter value is NULL, only append its key.
+    elseif (!isset($value)) {
+      $params[] = $key;
+    }
+    else {
+      // For better readability of paths in query strings, we decode slashes.
+      $params[] = $key . '=' . str_replace('%2F', '/', rawurlencode($value));
+    }
+  }
+
+  return implode('&', $params);
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function okstatefair_custom_block_info() {
+  $blocks = array();
+  $blocks['header_sf'] = array(
+    'info' => t('Header State fair'),
+    'cache' => DRUPAL_NO_CACHE,
+    'region' => 'header',
+    'status' => TRUE,
+    'visability' => 1,
+  );
+  $blocks['header_sfp'] = array(
+    'info' => t('Header State fair Park'),
+    'cache' => DRUPAL_NO_CACHE,
+    'region' => 'header',
+    'status' => TRUE,
+    'visability' => 1,
+  );
+  $blocks['header_sf_mobile'] = array(
+    'info' => t('Header State fair Mobile'),
+    'cache' => DRUPAL_NO_CACHE,
+    'region' => 'header',
+    'status' => TRUE,
+    'visability' => 1,
+  );
+  $blocks['header_sfp_mobile'] = array(
+    'info' => t('Header State fair park Mobile'),
+    'cache' => DRUPAL_NO_CACHE,
+    'region' => 'header',
+    'status' => TRUE,
+    'visability' => 1,
+  );
+  $blocks['footer_sf_mobile'] = array(
+    'info' => t('Footer State fair Mobile'),
+    'cache' => DRUPAL_NO_CACHE,
+    'region' => 'footer',
+    'status' => TRUE,
+    'visability' => 1,
+  );
+  $blocks['footer_sfp_mobile'] = array(
+    'info' => t('Footer State fair Park Mobile'),
+    'cache' => DRUPAL_NO_CACHE,
+    'region' => 'footer',
+    'status' => TRUE,
+    'visability' => 1,
+  );
+  $blocks['footer_sf'] = array(
+    'info' => t('Footer State fair'),
+    'cache' => DRUPAL_NO_CACHE,
+    'region' => 'footer',
+    'status' => TRUE,
+    'visability' => 1,
+  );
+  $blocks['footer_sfp'] = array(
+    'info' => t('Footer State fair Park'),
+    'cache' => DRUPAL_NO_CACHE,
+    'region' => 'footer',
+    'status' => TRUE,
+    'visability' => 1,
+  );
+  $blocks['header_2logo'] = array(
+    'info' => t('Header State fair with two logo'),
+      'cache' => DRUPAL_NO_CACHE,
+    'region' => 'header',
+    'status' => TRUE,
+    'visability' => 1,
+    'cache' => DRUPAL_CACHE_PER_PAGE,
+  );
+  $blocks['footer_2logo'] = array(
+    'info' => t('Footer State fair with two logo'),
+      'cache' => DRUPAL_NO_CACHE,
+    'region' => 'footer',
+    'status' => TRUE,
+    'visability' => 1,
+  );
+  $blocks['blogcat'] = array(
+    'info' => t('Blog categories'),
+      'cache' => DRUPAL_NO_CACHE,
+    'region' => 'sidebar_first',
+    'status' => TRUE,
+    'visability' => 1,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function okstatefair_custom_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'header_sf':
+      $block['subject'] = '';
+      $block['content'] = header_sf_content();
+      break;
+    case 'header_sfp':
+      $block['subject'] = '';
+      $block['content'] = header_sfp_content();
+      break;
+    case 'footer_sf':
+      $block['subject'] = '';
+      $block['content'] = footer_sf_content();
+      break;
+    case 'footer_sfp':
+      $block['subject'] = '';
+      $block['content'] = footer_sfp_content();
+      break;
+    case 'header_sf_mobile':
+      $block['subject'] = '';
+      $block['content'] = header_sf_mobile_content('menu-mobile-sf');
+      break;
+    case 'header_sfp_mobile':
+      $block['subject'] = '';
+      $block['content'] = header_sfp_mobile_content('menu-mobile-sfp');
+      break;
+    case 'footer_sf_mobile':
+      $block['subject'] = '';
+      $block['content'] = footer_sf_mobile_content();
+      break;
+    case 'footer_sfp_mobile':
+      $block['subject'] = '';
+      $block['content'] = footer_sfp_mobile_content();
+      break;
+    case 'footer_sfp_mobile_buy_ticket':
+      $block['subject'] = '';
+      $block['content'] = footer_sfp_mobile_buy_ticket_content();
+      break;
+    case 'header_2logo':
+      $block['subject'] = '';
+      $block['content'] = header_2logo_content();
+      break;
+    case 'footer_2logo':
+      $block['subject'] = '';
+      $block['content'] = footer_2logo_content();
+      break;
+    case 'blogcat':
+      $block['subject'] = 'Categories';
+      $block['content'] = blogcat_content();
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Custom html block
+ * @return string
+ */
+function blogcat_content() {
+  $voc = taxonomy_vocabulary_machine_name_load(BLOCK_VOC_VID);
+  $ar = taxonomy_get_tree($voc->vid);
+  foreach ($ar as $key => $value) {
+    $add_l[] = l($value->name, 'blog/all/' . $value->tid);
+  }
+  $list = '<div class="item-list">' . theme('item_list', array('items' => $add_l, 'title' => $voc->name, 'attributes' => array('class' => 'color-point'))) . '</div>';
+  return $list;
+}
+
+/**
+ * Custom html block
+ */
+function header_sf_content() {
+  $itemslist = common_menu('menu-state-fair');
+  $tickets = variable_get('tickets', '');
+  if (!empty($tickets))
+    $tickets_link = l('TICKETS', $tickets, array('attributes' => array('class' => array('btn'))));
+  else
+    $tickets_link = '';
+  $food = variable_get('foodfinder', '');
+  if (!empty($food))
+    $foodfinder_link = l('FOOD FINDER', $food, array('attributes' => array('class' => array('btn'))));
+  else
+    $foodfinder_link = '';
+    if (function_exists('ctools_modal_text_button')) {
+      $newsletter_link = ctools_modal_text_button('Newsletter', 'modal_forms/nojs/webform/' . WEBFORM_NEWSLETTER_NID, 'ctools-modal-modal-popup-medium', 'btn text newsletter ctools-modal-modal-popup-medium');
+    }
+    else $newsletter_link = '';
+  $search_box = drupal_get_form('search_form', 'header_sf');
+  $search_box = drupal_render($search_box);
+
+  $mobileapplication_url = variable_get('mobileapplication_url', '');
+  if (!empty($mobileapplication_url)) {
+    $mobile_app_link = l(t('Mobile app'), $mobileapplication_url, array('external' => TRUE, 'html' => TRUE, 'attributes' => array('class' => array('btn'), 'target' => '_blank')));
+  }
+  else {
+    $mobile_app_link = '';
+  }
+  $map_link = l('MAP', '/node/' . MAP_NID, array('attributes' => array('class' => array('btn'))));
+
+  if (!empty($itemslist))
+    return theme('header_sf_content', array('items' => $itemslist, 'newsletter_link' => $newsletter_link, 'tickets_link' => $tickets_link, 'foodfinder_link' => $foodfinder_link, 'search' => $search_box, 'mobile_app_link' => $mobile_app_link, 'map_link' => $map_link));
+  else
+    return;
+}
+
+/**
+ * Block callback content
+ */
+function header_sfp_content() {
+  $tickets_link = l('TICKETS', variable_get('tickets', ''), array('attributes' => array('class' => array('btn'))));
+  $itemslist = common_menu('menu-state-fair-park');
+  global $search_form;
+  $search_box = drupal_get_form('search_form', 'header_sfp');
+  $search_box = render($search_box);
+    if (function_exists('ctools_modal_text_button')) {
+      $newsletter_link = ctools_modal_text_button('Newsletter', 'modal_forms/nojs/webform/' . WEBFORM_NEWSLETTER_NID, 'ctools-modal-modal-popup-medium', 'btn newsletter text ctools-modal-modal-popup-medium');
+    }
+    else $newsletter_link = '';
+
+  $mobileapplication_url = variable_get('mobileapplication_url', '');
+  if (!empty($mobileapplication_url)) {
+    $mobile_app_link = l(t('Mobile app'), $mobileapplication_url, array('external' => TRUE, 'html' => TRUE, 'attributes' => array('class' => array('btn'), 'target' => '_blank')));
+  }
+  else {
+    $mobile_app_link = '';
+  }
+
+  if (!empty($itemslist))
+    return theme('header_sfp_content', array('items' => $itemslist, 'newsletter_link' => $newsletter_link,  'tickets_link' => $tickets_link, 'search' => $search_box, 'mobile_app_link' => $mobile_app_link));
+  else
+    return;
+}
+
+/**
+ * Block callback content
+ */
+function header_sf_mobile_content($menuname) {
+  $menu = menu_tree_all_data($menuname);
+  foreach ($menu as $key => $val) {
+      if ($val['link']['hidden'] != 1) {
+    $full_title = explode(' -- ', $val['link']['title']);
+    if (count($full_title) >= 2) {
+      $main_title = $full_title['0'];
+    }
+    else           $main_title = $val['link']['title'];
+    $items[] = array(
+      'data' => l($main_title, $val['link']['href']),
+      'class' => array(''),
+    );
+  }
+  }
+  if ($_GET['q'] == 'mobile-state-fair-calendar') {
+    $items[] = array(
+      'data' => l('View Full Site', 'state-fair-calendar', array('query' => array('device' => 'desktop'))),
+      'class' => array(''),
+    );
+  }
+  elseif ($_GET['q'] == 'node/3789') {
+    $items[] = array(
+      'data' => l('View Full Site', 'content/oklahoma-state-fair', array('query' => array('device' => 'desktop'))),
+      'class' => array(''),
+    );
+  }
+  else {
+    $items[] = array(
+      'data' => l('View Full Site', $_GET['q'], array('query' => array('device' => 'desktop'))),
+      'class' => array(''),
+    );
+  }
+
+  $itemslist = theme('item_list', array('items' => $items, 'title' => '', 'type' => 'ul', 'attributes' => array('class' => array('menu'))));
+
+  if (!empty($itemslist))
+    return theme('header_sf_mobile_content', array('items' => $itemslist));
+  else
+    return '';
+}
+
+/**
+ * Block callback content
+ */
+function header_sfp_mobile_content($menuname) {
+  $menu = menu_tree_all_data($menuname);
+  foreach ($menu as $key => $val) {
+    if ($val['link']['hidden'] != 1) {
+    $full_title = explode(' -- ', $val['link']['title']);
+    if (count($full_title) >= 2) {
+      $main_title = $full_title['0'];
+      if ($main_title == 'Map') {
+        $sfp_map = node_load(SFP_MAP_NID);
+        $val['link']['href'] = file_create_url($sfp_map->field_map_pdf_download[LANGUAGE_NONE]['0']['uri']);
+      }
+    }
+    else           $main_title = $val['link']['title'];
+    if ($val['link']['title'] == 'Map') {
+      $sfp_map = node_load(SFP_MAP_NID);
+      $val['link']['href'] = file_create_url($sfp_map->field_map_pdf_download[LANGUAGE_NONE]['0']['uri']);
+    }
+    $items[] = array(
+      'data' => l($main_title, $val['link']['href']),
+      'class' => array(''),
+    );
+    }
+  }
+  if ($_GET['q'] == 'calendar-sfp-mobile') {
+    $items[] = array(
+      'data' => l('View Full Site', 'calendar-sfp', array('query' => array('device' => 'desktop'))),
+      'class' => array(''),
+    );
+  }
+  elseif ($_GET['q'] == 'node/3789') {
+    $items[] = array(
+      'data' => l('View Full Site', 'content/state-fair-park', array('query' => array('device' => 'desktop'))),
+      'class' => array(''),
+    );
+  }
+  else {
+    $items[] = array(
+      'data' => l('View Full Site', 'node/801', array('query' => array('device' => 'desktop'))),
+      'class' => array(''),
+    );
+  }
+
+
+  $itemslist = theme('item_list', array('items' => $items, 'title' => '', 'type' => 'ul', 'attributes' => array('class' => array('menu'))));
+
+  if (!empty($itemslist))
+    return theme('header_sfp_mobile_content', array('items' => $itemslist));
+  else
+    return theme('header_sfp_mobile_content', array('items' => ''));
+}
+
+/**
+ * Block callback content
+ */
+function header_2logo_content() {
+  return theme('header_2logo_content', array('title' => drupal_get_title()));
+}
+
+/**
+ * Block callback content
+ */
+function footer_2logo_content() {
+  $itemslist = common_menu('menu-footer');
+  if (!empty($itemslist))
+    return theme('footer_2logo_content', array('items' => $itemslist));
+  else
+    return;
+}
+
+/**
+ * Block callback content
+ */
+function footer_sf_content() {
+  $itemslist = common_menu('menu-footer');
+  if (!empty($itemslist))
+    return theme('footer_sf_content', array('items' => $itemslist));
+  else
+    return;
+}
+
+/**
+ * Block callback content
+ */
+function footer_sfp_content() {
+  $itemslist = common_menu('menu-footer');
+  if (!empty($itemslist))
+    return theme('footer_sfp_content', array('items' => $itemslist));
+  else
+    return;
+}
+
+/**
+ * Block callback content
+ */
+function footer_sf_mobile_content() {
+  return theme('footer_sf_mobile_content', array('items' => ''));
+}
+
+/**
+ * Block callback content
+ */
+function footer_sfp_mobile_content() {
+  return theme('footer_sfp_mobile_content', array('items' => ''));
+}
+
+/**
+ * Block callback content
+ */
+function footer_sfp_mobile_buy_ticket_content() {
+  return theme('footer_sfp_mobile_content_buy_ticket', array('items' => ''));
+}
+
+/**
+ * Custom build menu
+ */
+function common_menu($menu_name) {
+  $items = array();
+  $act_links = array();
+  $itemslist = '';
+  $itemslistbelow = '';
+  $top = '';
+  $j = 0;
+  $bottom = '';
+  $itemsbelowsec = '';
+  $itemslistbelowsecond = '';
+  $menu = menu_tree_all_data($menu_name);
+  $active_trail = menu_get_active_trail();
+  foreach ($active_trail as $k => $column) {
+    $act_links[] = $column['href'];
+  }
+  $menu = array_values($menu);
+
+  if ($menu_name == 'menu-footer') {
+    if (isset ($column['menu_name']) && $column['menu_name'] == 'menu-state-fair-park') {
+      $mobile_link = 'content/state-fair-park';
+    }
+    else {
+      $mobile_link = 'content/oklahoma-state-fair';
+    }
+        $mobile_sub_menu = l('', $mobile_link, array('html' => TRUE, 'attributes' => array('class' => array('menu-item-text')), 'query' => array('device' => 'mobile')));
+//'
+//<a href="' . $mobile_link . '" class="menu-item-text"></a>
+//<div class="drop-down-menu">
+//  <ul class="list">
+//    <li class="item first last">
+//      ' . l('MOBILE SITE', $mobile_link, array('html' => TRUE, 'attributes' => array('class' => array('text')), 'query' => array('device' => 'mobile'))) . '
+//    </li>
+//  </ul>
+//  <div class="bottom-block">
+//    <div class="bottom-block-arrow"></div>
+//  </div>
+//</div>';
+    $items[] = array(
+      'data' => $mobile_sub_menu,
+      'class' => array('menu-item item-0 hideme mobile-version'),
+    );
+    $j++;
+  }
+
+  foreach ($menu as $k => $column) {
+    $class = '';
+    $itemsbelow = '';
+    if (in_array($column['link']['href'], $act_links) || $column['link']['in_active_trail'] == TRUE) {
+      $class .= ' active';
+    }
+    if (empty($column['below'])) {
+      $itemslistbelowsecond = '';
+      $hidden = !empty($column['link']['hidden']) ? $column['link']['hidden'] : 0;
+      if (!$hidden) {
+        $items[] = array(
+          'data' => l($column['link']['title'], $column['link']['href'], array('html' => TRUE, 'attributes' => array('class' => array('menu-item-text')))),
+          'class' => array('menu-item item-' . ($k + $j) . $class),
+        );
+      }
+    }
+    else {
+      $below = _okstatefair_custom_hide_disabled_menu_items($column['below']);
+      $below = array_values($below);
+      foreach ($below as $kbelow => $columnbelow) {
+        if ($kbelow % 2 == 0)
+          $cl = 'odd';
+        else
+          $cl = 'even';
+        if (empty($columnbelow['below']) && $columnbelow['link']['hidden'] != 1) {
+          if ($columnbelow['link']['title'] == 'Newsletter') {
+            if (function_exists('ctools_modal_text_button')) {
+              $itemsbelow[] = array(
+//           'data' => l($columnbelow['link']['title'], 'modal_forms/nojs/webform/' . WEBFORM_NEWSLETTER_NID, array('html' => TRUE, 'attributes' => array('class' => array('text', 'ctools-use-modal', 'ctools-modal-modal-popup-medium')))),
+                'data' => ctools_modal_text_button($columnbelow['link']['title'], 'modal_forms/nojs/webform/' . WEBFORM_NEWSLETTER_NID, 'ctools-modal-modal-popup-medium', 'text newsletter ctools-modal-modal-popup-medium'),
+                'class' => array('item ' . $cl),
+              );
+            }
+          }
+          else {
+            $itemsbelow[] = array(
+              'data' => l($columnbelow['link']['title'], $columnbelow['link']['href'], array('html' => TRUE, 'attributes' => array('class' => array('text')))),
+              'class' => array('item ' . $cl),
+            );
+          }
+        }
+        else {
+          $belowsecond = array_values($columnbelow['below']);
+          $itemsbelowsec = '';
+          $arr = '';
+          foreach ($belowsecond as $kbelowsecond => $columnbelowsecond) {
+            if ($columnbelowsecond['link']['hidden'] != 1) {
+              if ($kbelowsecond % 2 == 0)
+                $cl2 = 'odd';
+              else
+                $cl2 = 'even';
+              if ($columnbelowsecond['link']['mlid'] == CHICKASAW_MLID) {
+                if (date('n') == SEPTEMBER_MONTH && date('d') >= FAIR_START && date('d') - FAIR_START < count($columnbelowsecond['below']))
+                  $columnbelowsecond['link']['href'] = check_chickasaw_date(date('d'), $columnbelowsecond['below']);
+              }
+              $itemsbelowsec[] = array(
+                'data' => l($columnbelowsecond['link']['title'], $columnbelowsecond['link']['href'], array('html' => TRUE, 'attributes' => array('class' => array('text')))),
+                'class' => array('sub-item odd with-sub-menu ' . $cl2),
+              );
+              $arr = '<div class="item-arrow"></div>';
+            }
+          }
+          $l = '';
+          $itemslistbelowsecond = $arr . '<div class="sub-menu">';
+          $itemslistbelowsecond .= theme('item_list', array('items' => $itemsbelowsec, 'title' => '', 'type' => 'ul', 'attributes' => array('class' => array('sub-list')))) . '</div>';
+          if (empty($itemsbelowsec) && $columnbelow['link']['hidden'] != 1)
+            $l = l($columnbelow['link']['title'], $columnbelow['link']['href'], array('attributes' => array('class' => array('text'))));
+          elseif ($columnbelow['link']['hidden'] != 1)
+            $l = '<span class="text">' . $columnbelow['link']['title'] . '</span>';
+ //            if ($columnbelow['link']['title'] == 'Rides & Games') {
+ //                $l = '<div class="show-off menu-sparkle">' . theme('image', array('path' => path_to_theme() . '/images/sparkl.png')) . '</div><span class="text">' . $columnbelow['link']['title'] . '</span>';;
+ //            }
+          $itemsbelow[] = array(
+            'data' => $l . $itemslistbelowsecond,
+            'class' => array('item ' . $cl),
+          );
+        }
+      }
+      if ($k == count($menu) - 1)
+        $align = ' right-aligned';
+      else
+        $align = '';
+
+      if ($menu_name != 'menu-footer')
+        $top = '<div class="top-block"></div>';
+      else
+        $bottom = '<div class="bottom-block"><div class="bottom-block-arrow"></div></div>';
+      $itemslistbelow = '<div class="drop-down-menu' . $align . '">' . $top;
+      $itemslistbelow .= theme('item_list', array('items' => $itemsbelow, 'title' => '', 'type' => 'ul', 'attributes' => array('class' => array('list')))) . $bottom . '</div>';
+      $items[] = array(
+        'data' => '<a class="menu-item-text">' . $column['link']['title'] . '</a>' . $itemslistbelow,
+        'class' => array('menu-item item-' . ($k + $j) . $class),
+      );
+    }
+  }
+  $itemslist = theme('item_list', array('items' => $items, 'title' => '', 'type' => 'ul', 'attributes' => array('class' => array('menu'))));
+  return $itemslist;
+}
+
+/**
+ * Custom html block
+ * @return string
+ */
+function okstatefair_custom_theme() {
+  $module_path = drupal_get_path('module', 'okstatefair_custom');
+  $base = array(
+    'path' => "$module_path/theme",
+  );
+  return array(
+    'header_sf_content' => $base + array(
+  'template' => 'okstatefair_header', //leave off .tpl.php
+  'variables' => array('items' => NULL, 'newsletter_link' => NULL, 'foodfinder_link' => NULL, 'tickets_link' => NULL, 'search' => NULL, 'mobile_app_link' => NULL, 'map_link' => NULL),
+    ),
+    'header_sfp_content' => $base + array(
+  'template' => 'okstatefairpark_header', //leave off .tpl.php
+  'variables' => array('items' => NULL, 'newsletter_link' => NULL, 'tickets_link' => NULL, 'search' => NULL, 'mobile_app_link' => NULL),
+    ),
+    'header_sf_mobile_content' => $base + array(
+  'template' => 'okstatefair_header_mobile', //leave off .tpl.php
+  'variables' => array('items' => NULL),
+    ),
+    'header_sfp_mobile_content' => $base + array(
+  'template' => 'okstatefairpark_header_mobile', //leave off .tpl.php
+  'variables' => array('items' => NULL),
+    ),
+    'footer_sf_content' => $base + array(
+  'template' => 'okstatefair_footer', //leave off .tpl.php
+  'variables' => array('items' => NULL),
+    ),
+    'footer_sfp_mobile_content' => $base + array(
+  'template' => 'okstatefairpark_footer_mobile', //leave off .tpl.php
+  'variables' => array('items' => NULL),
+    ),
+    'footer_sfp_mobile_content_buy_ticket' => $base + array(
+  'template' => 'okstatefairpark_footer_mobile_buy_tickets', //leave off .tpl.php
+  'variables' => array('items' => NULL),
+    ),
+    'footer_sf_mobile_content' => $base + array(
+  'template' => 'okstatefair_footer_mobile', //leave off .tpl.php
+  'variables' => array('items' => NULL),
+    ),
+    'footer_sfp_content' => $base + array(
+  'template' => 'okstatefairpark_footer', //leave off .tpl.php
+  'variables' => array('items' => NULL),
+    ),
+    'header_2logo_content' => $base + array(
+  'template' => 'okstate_2logo_header', //leave off .tpl.php
+  'variables' => array('items' => NULL, 'foodfinder_link' => NULL, 'tickets_link' => NULL, 'search' => NULL, 'title' => ''),
+    ),
+    'footer_2logo_content' => $base + array(
+  'template' => 'okstate_2logo_footer', //leave off .tpl.php
+  'variables' => array('items' => NULL),
+    ),
+    'okstatefair_site_map_page' => $base + array(
+  'template' => 'okstatefair_site_map_page',
+  'variables' => array('sf_menu' => '', 'sfp_menu' => '', 'resources_menu' => ''),
+    ),
+    'okstatefair_mobile_menu_page' => $base + array(
+        'template' => 'okstatefair_mobile_menu_page',
+        'variables' => array('sf_menu' => '', 'sfp_menu' => ''),
+      ),
+  );
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function okstatefair_custom_menu_alter(&$items) {
+  $items['user/register']['access callback'] = FALSE;
+  $items['user/password']['access callback'] = FALSE;
+  $items['user/reset/%/%/%']['access callback'] = FALSE;
+  $items['search']['title'] = 'Search results';
+  $items["node/%node/draft_disney/%"] = array(
+    'title' => 'View draft',
+    'page arguments' => array(1),
+    'access callback' => '_access_state_fair_event_current_draft',
+    'page callback' => '_state_fair_event_node_current_view',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -9,
+  );
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function okstatefair_custom_form_alter(&$form, &$form_state, $form_id) {
+  global $user;
+  if (isset($form_state['build_info']['base_form_id'])) {
+    if ($form_state['build_info']['base_form_id'] == 'node_form') {
+      $form['actions']['cancel'] = array(
+        '#type' => 'submit',
+        '#value' => t('Cancel'),
+        '#access' => TRUE,
+        '#weight' => 15,
+        '#submit' => array('okstatefair_cancel_form_cancel', 'node_form_submit_build_node'),
+        '#limit_validation_errors' => array(),
+      );
+    }
+  }
+  switch ($form_id) {
+    case 'comment_node_blogpost_form':
+      $form['#attributes']['class'][] = 'block-leave-comment';
+      $form['author']['name']['#title'] = '';
+      $form['author']['name']['#description'] = '<div class="description">(required)</div>';
+      $form['field_comment_mail'][LANGUAGE_NONE]['0']['email']['#description'] = '<div class="description">(required)</div>';
+      $form['field_comment_website'][LANGUAGE_NONE]['0']['value']['#description'] = '<div class="description">(optional)</div>';
+      $form['actions']['submit']['#value'] = 'Leave comment';
+      $form['author']['name']['#attributes']['placeholder'] = 'Name';
+      $form['comment_body'][LANGUAGE_NONE]['0']['#attributes']['placeholder'] = t('Leave comment here');
+      $form['comment_body'][LANGUAGE_NONE]['0']['value']['#attributes']['placeholder'] = t('Leave comment here');
+      $form['field_comment_mail'][LANGUAGE_NONE]['0']['email']['#attributes']['placeholder'] = $form['field_comment_mail'][LANGUAGE_NONE]['#title'];
+      $form['field_comment_website'][LANGUAGE_NONE]['0']['value']['#attributes']['placeholder'] = $form['field_comment_website'][LANGUAGE_NONE]['#title'];
+      $form['comment_body'][LANGUAGE_NONE]['0']['#resizable'] = FALSE;
+      $form['comment_body'][LANGUAGE_NONE]['0']['value']['#resizable'] = FALSE;
+      $form['captcha']['#weight'] = -3;
+      // Hide label
+      $form['comment_body'][LANGUAGE_NONE]['0']['value']['#title_display'] = 'invisible';
+      $form['comment_body'][LANGUAGE_NONE]['0']['#title_display'] = 'invisible';
+      $form['field_comment_mail'][LANGUAGE_NONE]['0']['email']['#title_display'] = 'invisible';
+      $form['field_comment_website'][LANGUAGE_NONE]['0']['value']['#title_display'] = 'invisible';
+      $form['field_comment_website'][LANGUAGE_NONE]['#prefix'] = '';
+      $form['field_comment_website'][LANGUAGE_NONE]['#suffix'] = '';
+      $form['field_comment_mail'][LANGUAGE_NONE]['#prefix'] = '';
+      $form['field_comment_mail'][LANGUAGE_NONE]['#suffix'] = '';
+      break;
+    case 'search_form':
+//      $form['#attributes']['class'][] = 'search-block';
+//      $form['basic']['keys']['#attributes']['placeholder'] = 'What are you looking for?';
+//      $form['basic']['keys']['#attributes']['class'][] = 'serch-input';
+//      $form['basic']['submit']['#attributes']['class '][] = 'search-submit';
+//      $form['basic']['submit']['#attributes']['class '][] = 'form-submit';
+//      $form['basic']['keys']['#title'] = '';
+//      $form['#prefix'] = '<div class="search-wrapper">';
+//      $form['#suffix'] = '</div>';
+//      unset($form['advanced']);
+      break;
+    case 'webform_client_form_' . WEBFORM_NEWSLETTER_NID:
+      foreach (element_children($form['submitted']) as $key) {
+        $title = $form['submitted'][$key]['#title'];
+        $form['submitted'][$key]['#attributes'] = array('placeholder' => $title);
+      }
+      if (array_key_exists('mailchimp_email_address', $form['submitted']['email_address']))
+        $form['submitted']['email_address']['mailchimp_email_address']['#attributes'] = array('placeholder' => $form['submitted']['email_address']['mailchimp_email_address']['#title']);
+//      drupal_add_js('Drupal.behaviors.form_validate', 'inline');
+      drupal_add_js(drupal_get_path('module', 'okstatefair_custom') . '/js/newsletter.js');
+      $form['#submit'][] = 'okstatefair_custom_newsletter_submit';
+      break;
+    case 'webform_client_form_' . WEBFORM_GOLDEN_TICKET_NID:
+      drupal_add_js(drupal_get_path('module', 'okstatefair_custom') . '/js/golden_ticket.js');
+      if (!_webform_submission_total_limit_check($form['#node'])) {
+          $form['#node']->body = '';
+          $form['#node']->still_visible = t("We hope you are ready for a BIGGER BETTER BEST Oklahoma State Fair, September 14 - 24! Your Outside Gate Admission Tickets will be mailed in early September.");
+          foreach (element_children($form['submitted']) as $key) {
+            $title = $form['submitted'][$key]['#title'];
+            $form['submitted'][$key]['#attributes'] = array('placeholder' => $title);
+           }
+        }
+      break;
+      case 'webform_client_form_' . WEBFORM_GOLDEN_TICKET_NEWSLETTER_NID:
+        $golden_webform_node = node_load(WEBFORM_GOLDEN_TICKET_NID);
+        if (!_webform_submission_total_limit_check($golden_webform_node)) {
+          $form['#node']->body = '';
+        }
+        drupal_add_js(drupal_get_path('module', 'okstatefair_custom') . '/js/golden_ticket.js');
+        foreach (element_children($form['submitted']) as $key) {
+          $title = isset($form['submitted'][$key]['#title']) ? $form['submitted'][$key]['#title'] : '';
+          $form['submitted'][$key]['#attributes'] = array('placeholder' => $title);
+        }
+        $form['submitted']['email']['mailchimp_email_address']['#attributes'] = array('placeholder' => $form['submitted']['email']['mailchimp_email_address']['#title']);
+//        }
+      break;
+    case 'webform_client_form_' . WEBFORM__NID:
+      //$form_state['redirect'] = '/content/contact-us';
+      foreach (element_children($form['submitted']) as $key) {
+        $title = $form['submitted'][$key]['#title'];
+        $form['submitted'][$key]['#attributes'] = array('placeholder' => $title);
+      }
+      $form['actions']['reset'] = array(
+        '#type' => 'button',
+        '#value' => t('Clear'),
+        '#weight' => 0,
+        '#validate' => array(),
+        '#attributes' => array('onclick' => 'this.form.reset(); return FALSE;', 'class' => array('form-reset')),
+      );
+      break;
+    case 'views_exposed_form':
+      if ($form['#id'] == 'views-exposed-form-food-finder-page') {
+        $form['field_vendors_category_tid']['#options']['All'] = t('Select a food that fits your mood');
+        $form['field_great_taste_of_a_fair_value']['#access'] = FALSE;
+        $form['field_great_taste_of_a_fair_food_tid']['#access'] = FALSE;
+        if (isset($_GET['gtoaf']) && ($_GET['gtoaf'] == 1)) {
+          $form['field_great_taste_of_a_fair_value']['#default_value'] = 1;
+        }
+        if (isset($_GET['gtoaf']) && ($_GET['gtoaf'] == 1) && isset($_GET['field_vendors_category_tid']) ) {
+          $form['field_great_taste_of_a_fair_food_tid']['#default_value'] = $_GET['field_vendors_category_tid'];
+        }
+      }
+      if (!empty($form_state['view']->name) && $form_state['view']->name == 'vendors') {
+        if (!empty($form['location']['#options']['All'])) {
+          $form['location']['#options']['All'] = t('BROWSE BY LOCATION');
+        }
+        if (!empty($form['category']['#options']['All'])) {
+          $form['category']['#options']['All'] = t('BROWSE BY CATEGORY');
+        }
+      }
+      break;
+    case 'state_fair_event_node_form':
+      $module_path = drupal_get_path('module', 'okstatefair_custom');
+      if ($form['nid']['#value'] == XTREME_BULLS) {
+        drupal_add_js($module_path . '/js/custom.js');
+      }
+      if (!empty($form['field_sf_event_media'][LANGUAGE_NONE]['0']['nid']['#default_value'])) {
+        $form['field_sf_event_media'][LANGUAGE_NONE]['#suffix'] .= '<div class="edit-media-link">' . l(t('Edit media'), 'node/' . $form['field_sf_event_media'][LANGUAGE_NONE]['0']['nid']['#default_value'] . '/edit', array('attributes' => array('class' => array('revision-title-background')), 'query' => drupal_get_destination())) . '</div>';
+      }
+      if (isset($form['#node']->nid) && okstatefair_check_disnep_nid($form['#node']->nid)) {
+        if (!empty($form['field_sf_event_dates'][LANGUAGE_NONE])) {
+          foreach ($form['#node']->field_sf_event_dates[LANGUAGE_NONE] as $key => $val) {
+            if (isset($form['field_sf_event_dates'][LANGUAGE_NONE][$key]['field_sf_event_starred'])) {
+              $form['field_sf_event_dates'][LANGUAGE_NONE][$key]['field_sf_event_starred']['#access'] = TRUE;
+            }
+          }
+        }
+      }
+      break;
+    case 'state_fair_park_event_node_form':
+      if (!empty($form['field_sfp_event_locations'][LANGUAGE_NONE]['#default_value'])) {
+        $primary_values = array();
+        foreach ($form['field_sfp_event_locations'][LANGUAGE_NONE]['#default_value'] as $k => $v) {
+          $primary_values[$v] = $form['field_sfp_event_locations'][LANGUAGE_NONE]['#options'][$v];
+        }
+        $form['field_sfp_event_primary_location'][LANGUAGE_NONE]['#options_selected'] = $primary_values;
+      }
+      $form['field_sfp_event_primary_location']['#prefix'] = '<div id="dynamic-location">';
+      $form['field_sfp_event_primary_location']['#suffix'] = '</div>';
+      $form['field_sfp_event_locations'][LANGUAGE_NONE]['#ajax'] = array(
+        'event' => 'change',
+        'callback' => 'primary_location_ajax_callback',
+        'wrapper' => 'dynamic-location',
+      );
+      break;
+    case 'xtreme_subpage_node_form':
+      //$form['#submit'][] = 'okstatefair_custom_xtreme_custom_submit';
+      break;
+    case 'food_node_form':
+      foreach ($form['field_vendors'][LANGUAGE_NONE] as $k => $v) {
+        if (is_numeric($k))
+          $form['field_vendors'][LANGUAGE_NONE][$k]['remove_button']['#value'] = 'Clear items';
+      }
+      $form['field_vendors'][LANGUAGE_NONE]['add_more']['#value'] = 'Add another vendor locaton';
+      $form['field_vendors'][LANGUAGE_NONE]['add_more']['#suffix'] = l('Add food item', 'admin/structure/taxonomy/other/add', array('attributes' => array('class' => array('button')), 'query' => drupal_get_destination()));
+      break;
+    case 'taxonomy_form_term':
+      if ($form['vocabulary_machine_name']['#value'] == 'other') {
+        if ($form['actions']['submit']['#value'] == 'Delete') {
+          $form['description']['#markup'] = 'Deleting an item will delete it from the food finder list of foods, but will not delete it from the food vendor descriptions. You will need to add it to a food vendor list to return it to the food finder list.';
+          $form['#action'] = '/taxonomy/term/' . $form['tid']['#value'] . '/edit?destination=' . ADMIN_FF_LIST;
+        }
+        else {
+          if (array_key_exists(MODERATOR_ROLE_ID, $user->roles) || array_key_exists(MANAGER_ROLE_ID, $user->roles) || array_key_exists(NEWMANAGER_ROLE_ID, $user->roles)) {
+            $form['relations']['#access'] = FALSE;
+            $form['description']['#access'] = FALSE;
+          }
+        }
+      }
+      break;
+    case 'disnep_subpage_node_form':
+      //$form['#submit'][] = 'okstatefair_custom_disnep_custom_submit';
+      break;
+//    case 'event_subpage_node_form':
+//    drupal_add_js(drupal_get_path('module', 'okstatefair_custom') .'/js/fields_auto.js');
+//      break;
+  }
+  //hode comment settings for nodes ,
+  if (isset($form['comment_settings']) && (array_key_exists(MODERATOR_ROLE_ID, $user->roles) || array_key_exists(NEWMANAGER_ROLE_ID, $user->roles) || array_key_exists(MANAGER_ROLE_ID, $user->roles))) {
+    $form['comment_settings']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Custom cancel button callback.
+ */
+function okstatefair_cancel_form_cancel($form, &$form_state) {
+  if (array_key_exists('destination', $_GET))
+    $url = $_GET['destination'];
+  elseif (isset($form['#node']->nid))
+    $url = 'node/' . $form['#node']->nid;
+  elseif ($form['#form_id'] == 'blogpost_node_form')
+    $url = 'blog';
+  drupal_goto($url);
+}
+
+/**
+ *
+ */
+function validates_url($string, $sec) {
+  global $base_url;
+  if (preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $string)) {
+    return $string;
+  }
+  elseif ($sec == 0) {
+    if (validates_url($base_url . $string, 1) != FALSE)
+      return $base_url . $string;
+  }
+  return FALSE;
+}
+
+/**
+ *
+ */
+function check_chickasaw_date($date, $items) {
+  $artists = array_values($items);
+//  if ($artists[$date - FAIR_START]['link']['hidden'] == 1 || $date > 14 )
+//  if ($date != FAIR_START) {
+//    $start = FAIR_START-1;
+//  }
+//  else {
+//    $start = FAIR_START;
+//  }
+
+  $artist = $artists[$date - FAIR_START-1]['link']['href'];
+//  else {
+//    if ($date == 19) $date = $date -1;
+//     $artist = $artists[$date - FAIR_START]['link']['href'];
+//  }
+  return $artist;
+}
+
+/**
+ *
+ */
+function okstatefair_custom_newsletter_submit($form, &$form_state) {
+
+}
+
+/**
+ *
+ */
+function okstatefair_custom_node_presave($node) {
+
+//  if (!empty($node->nid) && $node->nid == XTREME_BULLS) {
+//    module_load_include('inc', 'okstatefair_custom', 'includes/okstatefair.special_events');
+//    $nodes = private_events();
+//
+//    foreach ($node->field_sf_event_dates[LANGUAGE_NONE] as $k => $v) {
+//      $val[] = $v['value'];
+//    }
+//    $db_or = db_or();
+//    foreach ($val as $k => $v)
+//      $db_or->condition('fdfsedd.entity_id', $v);
+//    $query = db_select('field_data_field_sf_event_dates_date', 'fdfsedd')
+//        ->condition($db_or)
+//        ->fields('fdfsedd', array('field_sf_event_dates_date_value', 'field_sf_event_dates_date_value2'));
+//    $result = $query->execute()->fetchAll();
+//    $field_collection_item_values = array();
+//    foreach ($nodes as $k => $nid) {
+//      $subnode = node_load($nid);
+//      $field_collection_item_values = array();
+//      if (!empty($subnode->field_sf_event_dates[LANGUAGE_NONE])) {
+//        foreach ($subnode->field_sf_event_dates[LANGUAGE_NONE] as $field_item) {
+//          $field_collection_item_values[] = $field_item['value'];
+//        }
+//        unset($subnode->field_sf_event_dates[LANGUAGE_NONE]);
+//        node_save($subnode);
+//      }
+//      entity_delete_multiple('field_collection_item', $field_collection_item_values);
+//      if (isset($result[$k])) {
+//        $values = array(
+//          'field_name' => 'field_sf_event_dates',
+//          'field_sf_event_dates_date' => array(
+//            LANGUAGE_NONE => array(array('value' => $result[$k]->field_sf_event_dates_date_value, 'value2' => $result[$k]->field_sf_event_dates_date_value2 ? $result[$k]->field_sf_event_dates_date_value2 : '')),
+//          ),
+//        );
+//        $entity = entity_create('field_collection_item', $values);
+//        $entity->setHostEntity('node', $subnode);
+//        $entity->save();
+//      }
+//    }
+//  }
+}
+/**
+ * custom page callback
+ */
+function okstatefair_custom_term_image($taxonomy_term) {
+
+  $feild_names = array('field_location_map_small', 'field_sf_event_location_map', 'field_sf_event_location_large');
+  //small sfp image field(in real there is a big imagefile), than small sf image (in case if big image not added)
+  foreach ($feild_names as $field) {
+    if (!empty($taxonomy_term->{$field}[LANGUAGE_NONE][0]['uri'])) {
+      $uri = $taxonomy_term->{$field}[LANGUAGE_NONE][0]['uri'];
+      $image_name = $taxonomy_term->{$field}[LANGUAGE_NONE][0]['filename'];
+    }
+  }
+  if (!empty($uri)) {
+    $image_file = (image_get_info($uri));
+    drupal_add_http_header('Pragma', 'public');
+    drupal_add_http_header('Expires', '0');
+    drupal_add_http_header('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
+    drupal_add_http_header('Content-Type', $image_file['mime_type']);
+    drupal_add_http_header('Content-Disposition', 'attachment; filename=' . $image_name . ';');
+    drupal_add_http_header('Content-Transfer-Encoding', 'binary');
+    drupal_add_http_header('Content-Length', $image_file['file_size']);
+    readfile(file_create_url($uri));
+    unlink(file_create_url($uri));
+    drupal_exit();
+  }
+}
+
+/**
+ * Implements hook_wysiwyg_editor_settings_alter().
+ */
+function okstatefair_custom_wysiwyg_editor_settings_alter(&$settings, $context) {
+  if ($context['profile']->editor == 'tinymce') {
+    //get tall taxonomy terms from "State fair event location"
+    $links = array();
+    $taxonomy_nmachinen_names = array('sf_event_location', 'state_fair_park_event_location');
+    $name_duplicates = array();
+    foreach ($taxonomy_nmachinen_names as $machine_name) {
+      $taxonomy_vocabluary = taxonomy_vocabulary_machine_name_load($machine_name);
+      $links[] = array('title' => $taxonomy_vocabluary->name);
+      $taxonomy = taxonomy_get_tree($taxonomy_vocabluary->vid);
+      if (!empty($taxonomy)) {
+        foreach ($taxonomy as $val) {
+          if (!in_array($val->name, $name_duplicates)) {
+            $links[] = array('title' => $val->name,
+              'inline' => 'a',
+              'classes' => 'field-location-map-popup',
+              'attributes' => array('href' => '/taxonomy/term/' . $val->tid . '/image'),
+            );
+          }
+          $name_duplicates[] = $val->name;
+        }
+      }
+    }
+    if (!empty($links)) {
+      $settings['style_formats'] = $links;
+    }
+  }
+}
+
+/**
+ * custom page callback
+ */
+function okstatefair_custom_generate_sfp_feed_page() {
+  if ( $_SERVER['SERVER_PORT'] == '7080' && $_SERVER['SERVER_ADDR'] == $_SERVER['REMOTE_ADDR']) {
+    $output = views_embed_view('calendar_feed', 'views_data_export_1');
+    file_unmanaged_save_data($output , 'public://schedule_events.xml', FILE_EXISTS_REPLACE);
+  }
+  else drupal_goto('<front>');
+}
+/**
+ * custom page callback
+ */
+function okstatefair_custom_generate_fairpark_feed_page() {
+  if ($_SERVER['SERVER_PORT'] == '7080' && $_SERVER['SERVER_ADDR'] == $_SERVER['REMOTE_ADDR']) {
+    $output = views_embed_view('sfp_calendar_feed', 'views_data_export_1');
+    file_unmanaged_save_data($output , 'public://schedule_sfp_events.xml', FILE_EXISTS_REPLACE);
+  }
+  else drupal_goto('<front>');
+}
+
+/**
+ * Implementation of hook_views_query_alter().
+ */
+function okstatefair_custom_views_query_alter(&$view, &$query) {
+  if ($view->name == 'food_finder' && $view->current_display == 'page') {
+    // Don't display results until at least one exposed filter has a value set.
+    $filter_set = FALSE;
+    foreach ($view->filter as $filter) {
+      // Check if we've found a filter identifier that is set.
+      if ($filter->options['exposed'] && array_key_exists($filter->options['expose']['identifier'], $_GET)) {
+        if ($_GET[$filter->options['expose']['identifier']] != 'All') {
+          $filter_set = TRUE;
+        }
+//        break;
+      }
+    }
+    // If the filter isn't set, add a WHERE clause to the query that
+    // cannot be TRUE. This ensures the view returns no results.
+    if (!$filter_set) {
+      $query->add_where(0, 'FALSE');
+      // To display a different message (or no message at all) you
+      // also might want to adjust the Views' empty text.
+      //$view->display_handler->options['empty'] = '';
+    }
+  }
+}
+
+/**
+ * Checks if the user can view the current node revision.
+ *
+ * @param $node
+ *   The node being acted upon.
+ *
+ * @return
+ *   Booelan TRUE or FALSE.
+ */
+function _access_state_fair_event_current_draft($node) {
+
+  if (isset($node->field_sf_event_media['und'][0]['nid'])) {
+    $media_node = node_load($node->field_sf_event_media['und'][0]['nid'],4426);
+    if (isset($media_node->workbench_moderation['current']->state) && $media_node->workbench_moderation['current']->state == 'draft') {
+      return TRUE;
+    }
+  }
+  if ($node->type == 'disnep_subpage') {
+    $args = arg();
+    if (isset($args[3])) {
+      return TRUE;
+    }
+  }
+  if ($node->type == 'state_fair_event' && $node->nid != XTREME_BULLS) {
+    $args = arg();
+    if (isset($args[3])) {
+      return TRUE;
+    }
+//    if (isset($node->field_sf_event_media) && $node->field_sf_event_media['und'][0]['node']->workbench_moderation['current']->state == 'draft') {
+//      return TRUE;
+//    }
+  }
+  return FALSE;
+}
+
+/**
+ * Redirects the user to the current revision of the node.
+ *
+ * This page will deliver either the 'draft' page or the regular node view page.
+ *
+ * @param $node
+ *   The node being acted upon.
+ */
+function _state_fair_event_node_current_view($node) {
+  $args = arg();
+  if (isset($args[3])) {
+    drupal_goto('node/' . $node->nid, array('query' => array('draft' => 1, 'vid' => $args[3])));
+  }
+  if (_access_state_fair_event_current_draft($node)) {
+    drupal_goto('node/' . $node->nid, array('query' => array('draft' => 1)));
+  }
+  drupal_goto('node/' . $node->nid);
+}
+function okstatefair_custom_views_rss_item_elements() {
+  $elements['custom:location'] = array(
+    'title' => t('Event location'),
+    'description' => t('Event location'),
+  );
+  $elements['custom:start_hour'] = array(
+    'title' => t('Event Start Hour'),
+    'description' => t('Event Start Hour'),
+  );
+  $elements['custom:start_time'] = array(
+    'title' => t('Event Start Time'),
+    'description' => t('Event Start Time'),
+  );
+  $elements['custom:end_time'] = array(
+    'title' => t('Event End Time'),
+    'description' => t('Event End Time'),
+  );
+  return $elements;
+}
+function okstatefair_custom_views_rss_namespaces() {
+  $namespaces['custom'] = array(
+    'prefix' => 'xmlns',
+    'uri' => 'http://okstatefair-vip.funnelstaging.com/state-fair-calendar',
+  );
+  return $namespaces;
+}
+
+function primary_location_ajax_callback($form, &$form_state) {
+  if (!empty($form_state['values'])) {
+    $form['field_sfp_event_primary_location'][LANGUAGE_NONE]['#default_value'] = '_none';
+    $primary_values = array();
+    foreach ($form_state['values']['field_sfp_event_locations'][LANGUAGE_NONE] as $k => $v) {
+      if (!empty($v))
+        $primary_values[$v['tid']] = $form['field_sfp_event_locations'][LANGUAGE_NONE]['#options'][$v['tid']];
+      else $primary_values['_none'] = '- None -';
+    }
+    $form['field_sfp_event_primary_location'][LANGUAGE_NONE]['#value'] = key($primary_values);
+    $form['field_sfp_event_primary_location'][LANGUAGE_NONE]['#options_selected'] = $primary_values;
+  }
+  return $form['field_sfp_event_primary_location'];
+}
+/**
+ * Provide default date value
+ */
+
+function okstatefair_custom_get_default_date($format) {
+  $dates = okstatefair_calendar_get_available_dates();
+  $cur_date = new DateObject('now', date_default_timezone(), NULL);
+  $cur_date_string = $cur_date->format($format);
+
+  if(in_array($cur_date_string, $dates)) {
+    return $cur_date_string;
+  } else {
+    return reset($dates);
+  }
+};
+/**
+ * Implements hook_entity_info_alter().
+ */
+function okstatefair_custom_entity_info_alter(&$entity_info) {
+  $entity_info['node']['view modes']['insta_home'] = array(
+    'label' => t('Instagram teaser'),
+    'custom settings' => TRUE,
+  );
+}
+
+/**
+ * Hide disabled menu items.
+ * @param $column
+ */
+function _okstatefair_custom_hide_disabled_menu_items($below_items) {
+
+  if (!is_array($below_items)) {
+    return;
+  }
+
+  foreach ($below_items as $key => $item) {
+    if (isset($item['link']['hidden']) && !empty($item['link']['hidden'])) {
+      unset($below_items[$key]);
+    }
+  }
+  return $below_items;
+}

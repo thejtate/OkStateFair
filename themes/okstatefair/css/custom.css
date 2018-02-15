@@ -1,0 +1,2098 @@
+/* End of footer menu */
+/* Basic settings */
+body {
+  overflow-x: hidden;
+}
+
+.field-collection-view {
+  padding: 0px;
+  margin: 0px;
+  border: none;
+}
+
+.node-type-home .header {
+  z-index: 101;
+}
+
+.field-collection-container {
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+
+.block-buttons-full .field-collection-view.clearfix::after {
+  content: none;
+}
+
+.page-type-3 .body .body-inner .block-buttons-full .btn, .page-type-5 .body .body-inner .block-buttons-full .btn, .page-type-6 .body .body-inner .block-buttons-full .btn {
+  position: relative;
+}
+
+.node-homesub div.contextual-links-wrapper,
+.node-homesubpark div.contextual-links-wrapper {
+  right: 70px;
+}
+
+.hideme {
+  display: none !important;
+}
+
+.wrapp-player .video-player iframe,
+.wrapp-player .video-player .media-youtube-video {
+  width: 265px;
+  height: 195px;
+}
+
+.footer-type-2 .footer-navigation .drop-down-menu {
+  width: 152px;
+}
+
+/* End of basic settings */
+
+/* Calendar SF*/
+a#sf-calendar-print-link {
+  top: 65px;
+}
+
+.empty-agenda {
+  font-size: 14px;
+  color: #3f3f3e;
+}
+
+.empty-agenda .empty-img {
+  background: url('../images/agenta_instr.png') no-repeat;
+  width: 179px;
+  height: 68px;
+  margin: 20px auto;
+}
+
+.empty-agenda .empty-text {
+  margin: 0 15px;
+}
+
+.my-agenda .empty-agenda {
+  display: none;
+  width: 226px;
+}
+
+.my-agenda .content-agenta .empty-agenda {
+  display: block;
+}
+
+a.btn-my-agenda {
+  outline: 0 none;
+}
+
+.table-event-wrapp td.views-empty {
+  text-align: center;
+  font-size: 16px;
+  line-height: 25px;
+}
+
+.calendar-one-line a.edit-dates {
+  position: absolute;
+  top: 70px;
+  left: 30px;
+  text-decoration: underline;
+}
+
+.active-agenda .ajax-loader {
+  /*display: none;*/
+  background: url("../images/agenda-ajax-loader.gif") no-repeat scroll center center white;
+  border-radius: 10px 10px 10px 10px;
+  box-shadow: 0 0 5px #999;
+  height: 40px;
+  opacity: 0.7;
+  position: absolute;
+  top: 150px;
+  left: 92px;
+  width: 40px;
+  z-index: 1000;
+}
+
+.active-agenda .share-ajax-loader {
+  background: url("../images/agenda-ajax-share-loader.gif") no-repeat scroll center center transparent;
+  display: none;
+  height: 20px;
+  opacity: 0.7;
+  position: absolute;
+  top: 16px;
+  left: 87px;
+  width: 20px;
+  z-index: 1000;
+}
+
+#sf-calendar-print-link.data-loading {
+  background: url("../images/agenda-ajax-share-loader.gif") no-repeat scroll center center transparent;
+  /*display: none;*/
+  height: 30px;
+  opacity: 0.7;
+  /*position: absolute;*/
+  /*top: 16px;*/
+  /*left: 87px;*/
+  width: 30px;
+  /*z-index: 1000;*/
+}
+
+.active-agenda .wrapper-share-wrapper {
+  display: none;
+}
+
+.active-agenda .wrapper-share-wrapper.active {
+  display: block;
+}
+
+.my-agenda .content-agenta {
+  width: 226px;
+}
+
+/* End Calendar SF*/
+
+/* Shared events page*/
+.shared-events table.table-event th.last {
+  text-align: right;
+}
+
+.table-event-wrapp tr.odd td.active {
+  background: inherit;
+}
+
+.table-event-wrapp tr.even td.active {
+  background: inherit;
+}
+
+/* END Shared events page*/
+
+/* Calendar SPF */
+.calendar-calendar tr {
+  background-color: transparent;
+}
+
+.calendar-calendar table.mini td.empty {
+  background-color: transparent;
+  border-color: #f0e4cd;
+}
+
+.calendar-calendar table.mini td.has-events a {
+  color: #5a7780;
+  text-decoration: none;
+}
+
+.calendar-calendar table.mini td.has-events a:hover {
+  opacity: .7;
+}
+
+.calendar-calendar table.mini td.has-events a
+.calendar-calendar tr td.today {
+  background-image: url("../images/bg/bg-page-fill-1.png");
+}
+
+.ajax-progress .throbber {
+  background: transparent url('../images/ajax_loader_blue.gif') no-repeat;
+  float: none;
+  height: 16px;
+  margin: 2px;
+  width: 16px;
+  display: inline-block;
+}
+
+.calendar-cell .cell-calendar-footer .month-slider .btn-prev,
+.calendar-cell .cell-calendar-footer .month-slider .btn-next {
+  text-indent: -9999px;
+}
+
+/* End Calendar SPF*/
+.table-price tr {
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+.view-calendar-chosen-month .table-type-1 th,
+.view-calendar-coming-up .table-type-1 th,
+.view-calendar-this-week .table-type-1 th,
+.view-calendar-chosen-date .table-type-1 th {
+  text-transform: uppercase;
+}
+
+.table-type-1 th.views-field-field-sfp-event-dates-date {
+  width: 90px;
+}
+
+.table-type-1 th.views-field-title {
+  width: 400px;
+}
+
+.view-state-fair-park-calendar .month-slider .ajax-progress {
+  display: none;
+}
+
+.col-2 a.back-btn {
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: "AvenirLT-Roman";
+  font-size: 15px;
+  color: #928876;
+}
+
+.col-2 a.back-btn:hover {
+  color: #444037;
+}
+
+.view-state-fair-park-calendar .views-exposed-form {
+  display: none;
+}
+
+.navigation-sidebar > div > ul {
+  width: 240px;
+}
+
+.page-type-3 .body .body-inner .body-content .style-3, .page-type-5 .body .body-inner .body-content .style-3, .page-type-6 .body .body-inner .body-content .style-3 {
+  display: inline;
+  float: none;
+  clear: both;
+  text-decoration: none;
+}
+
+.style-3 a {
+  font-family: Arial, "Helvetica CY", "Nimbus Sans L", sans-serif;
+  font-size: 14px;
+  text-decoration: underline;
+  color: #444037;
+  float: none;
+  margin-bottom: 25px;
+  display: inline;
+}
+
+.block-buttons-full {
+  position: relative;
+}
+
+.page-type-custom-xtremebulls .info-text p:first-child {
+  width: 350px;
+  max-width:100%;
+}
+
+/* menu fixes */
+.navigation-sidebar > div > ul > li.active > a {
+  color: #ab0b26;
+}
+
+.page-type-promo .info-text a {
+  font-size: inherit;
+  color: inherit;
+  text-decoration: underline;
+}
+
+.footer-type-2 {
+  z-index: 0;
+}
+
+.page-type-custom-xtremebulls .title-promo {
+  float: left;
+}
+
+.page-type-v .node-equine .with-image.image-right p {
+  width: 600px;
+  float: left;
+}
+
+.calendar-calendar table.mini td.today.chosen-calendar-date,
+.calendar-calendar table.mini td.has-events.chosen-calendar-date {
+  background-color: #f2eee7;
+  background-image: none;
+}
+
+.calendar-calendar table.mini td.has-events.chosen-calendar-date a {
+  color: #5a7780;
+}
+
+.calendar-cell .cell-calendar-body .days td.today {
+  background-color: #ffc833;
+  color: #5a7780;
+}
+
+.page-type-5 .body .admission-fees-list .fees-list-title {
+  margin-bottom: 5px;
+}
+
+#node-2297 .clear-box .content-text,
+.node-equine .clear-box .content-text {
+  width: 564px;
+  float: right;
+}
+
+.page-type-v .node-exhibits .clear-box.with-image .width-600,
+.page-type-v .node-arts .clear-box.with-image .width-600 {
+  width: 314px;
+  float: right;
+}
+
+.node-wine-competition .content-wrapper.even,
+.node-wine-competition .content-wrapper.odd {
+  /*width: 564px;
+  float: right;*/
+}
+
+#node-2193 .clear-box.with-image .image {
+  float: right;
+  margin-right: 0px;
+}
+
+/*#node-2193 .clear-box.with-image .content-text {
+  width: 333px;
+  float: right;
+}*/
+.page-type-v .content-wrapper h3 span {
+  font-size: 35px;
+  line-height: 36px;
+}
+
+.node-type-hours-admissions .page-type-v .content-wrapper.first {
+  min-height: 0;
+}
+
+.node-disnep-subpage {
+  outline: none;
+  position: absolute;
+  width: 100%;
+}
+
+/* CALENDAR PARK ZEBRA FIX */
+.page-calendar-sfp .table-type-1 tr td {
+  background-color: #fff7e7;
+}
+
+.page-calendar-sfp .table-type-1 tr:nth-child(2n) td {
+  background-color: #f5ead7;
+}
+
+/* PLOHO PLOHO - NADO POPRAVIT UTROm */
+.page-node-1549 .wrapp-player .video-player {
+  height: 195px;
+}
+
+/* */
+body #admin-menu {
+  margin-right: 0;
+}
+
+.page-type-1 .body .body-inner .body-content .body-content-columns .table-agenda td:nth-child(1) {
+  width: 150px;
+}
+
+.page-type-1 .body .body-inner .body-content .body-content-columns .table-agenda td:nth-child(2) {
+  width: 150px;
+}
+
+.page-type-1 .body .body-inner .body-content .body-content-columns .table-agenda td:nth-child(3) {
+  width: 290px;
+}
+
+/* SErach no results */
+.page-type-search .description h2 {
+  text-align: left;
+  font-size: 18px;
+  color: #756c5f;
+  line-height: 24px;
+}
+
+.page-type-search .description ul {
+  text-align: left;
+  font-size: 12px;
+  color: #71695c;
+  line-height: 24px;
+}
+
+.page-type-search .navigation .menu .item-center span {
+  font-size: 20px;
+}
+
+/* End for search */
+
+.page-type-v .content-wrapper.first {
+  min-height: 0;
+  padding-bottom: 15px
+}
+
+.node-ticket-office .content-wrapper.first {
+  min-height: 300px;
+}
+
+.page-type-v .content-wrapper h4 p {
+  font-size: 20px;
+  line-height: 24px;
+  text-decoration: underline;
+}
+
+.page-type-v .content-wrapper span.nofol a {
+  cursor: text;
+  text-decoration: none;
+}
+
+#node-2246 .width-600-right .width-50 {
+  float: none;
+}
+
+.page-type-contact .section.dark-bg p a {
+  color: #FFF3BD;
+}
+
+.contact-form-wrapper .form-textarea-wrapper textarea {
+  width: 585px;
+}
+
+.contact-form-wrapper .form-actions .form-reset.form-submit {
+  background: #DDD;
+}
+
+.contact-form-wrapper .captcha {
+  float: left;
+  margin-right: 5px;
+}
+
+.page-type-5 .body-content .btn-back-wrapp {
+  z-index: 10;
+}
+
+.webform-confirmation p {
+  text-align: center;
+}
+
+#webform-ajax-wrapper-3006 .messages.error {
+  width: 535px;
+}
+
+.page-type-coming .body .body-inner .body-content {
+  min-height: 300px;
+}
+
+.node-type-state-fair-event .tabs {
+  float: right;
+}
+
+.page-type-custom-disney .tabs,
+.navigation-sidebar-static .tabs,
+.page-type-custom-xtremebulls .tabs {
+  float: none;
+}
+
+.page-type-v .node-artex .content-wrapper h4 p {
+  font-size: 18px;
+}
+
+.page-type-v .node-academy .content-wrapper.with-image .image {
+  float: right;
+  margin-left: 68px;
+  margin-right: 0px;
+}
+
+.page-type-v .body-inner .body-content #node-3030 h3.title-images .logo-pepper {
+  width: 129px;
+  height: 109px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+
+/* Site map */
+.page-type-sitemap .sitemap-col li span.has-submenu {
+  font-style: italic;
+  color: #707070;
+}
+
+.page-type-sitemap .sitemap-col h5 a:hover {
+  text-decoration: underline;
+}
+
+/* End of sitemap */
+/* Map page */
+.page-type-map .tabs {
+  position: absolute;
+  top: 20px;
+  z-index: 99;
+}
+
+/* End of map page */
+/* video page */
+.node-type-video .video .media-youtube-player {
+  width: 380px;
+  height: 244px;
+}
+
+.node-type-video .page-type-v .content-wrapper.first {
+  min-height: 340px;
+}
+
+/* End of video page */
+.navigation-sidebar .menu > li > a {
+  border-bottom: none;
+  border-top: none;
+}
+
+.page-type-search .search-result-item h5 a {
+  color: #756C5F;
+  font-size: 18px;
+  line-height: 24px;
+  text-decoration: none;
+}
+
+.node-type-barns .page-type-v .content-wrapper.first {
+  padding-bottom: 0px;
+}
+
+.page-type-7 .content-wrapper > div > .content-col {
+  display: -moz-inline-stack;
+  display: inline-block;
+  vertical-align: middle;
+  zoom: 1;
+  vertical-align: top;
+}
+
+.node-type-barns .content-wrapper.clear-box.even p,
+.node-type-barns .content-wrapper.clear-box.even h5 {
+  width: 562px;
+  float: right;
+}
+
+/* Construction Updates Page */
+.page-type-v .even .col-item-first .media-youtube-player {
+  width: 420px;
+  height: 265px;
+}
+
+.page-type-v .node-cu + .content-wrapper {
+  padding-bottom: 25px;
+}
+
+/* End of Construction Updates Page */
+.change-node-date {
+  background: #FAEDD4;
+  color: #4a4740;
+  clear: right;
+  margin: 0 -52px;
+  padding: 23px 52px;
+  text-align: right;
+  font-size: 10px;
+  font-family: Arial, "Helvetica CY", "Nimbus Sans L", sans-serif;
+}
+
+.page-type-v .content-wrapper p.content-date {
+  margin-bottom: 0;
+}
+
+body .link-print {
+  z-index: 0;
+}
+
+body .page-type-v .content-wrapper.content-wrapper-last {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+#main .body-content {
+  min-height: 433px;
+}
+
+.page-type-v #main .body-content {
+  min-height: 705px;
+}
+
+#sm2-container embed {
+  height: 0;
+}
+
+.contact-form-wrapper .form-textarea-wrapper textarea {
+  float: left;
+}
+
+.page-type-v .node-opening .field-collection-container .field-collection-view:first-child .content-wrapper {
+  width: 560px;
+  float: right;
+  padding: 0;
+  min-height: 340px;
+}
+
+.page-type-v .node-pageants .content-wrapper.field-collection-item-field-content-locations.odd:first-child {
+  background: #6d6759 url("../images/bg/bg-dark-gray.png") 0 0 repeat;
+  margin: 0 -52px;
+  padding: 18px 52px;
+  color: #FFE9BA;
+}
+
+/* Press Releases */
+.page-type-releases .navigation .menu .item-center span {
+  font-size: 20px;
+}
+
+.page-type-releases .info p span {
+  text-align: left;
+  display: inline;
+}
+
+/* End of Press Releases */
+.video-wrapper .video.center h2 {
+  font-family: "AvenirLT-Black";
+  font-size: 30px;
+}
+
+.popup-newsletter #modal-title {
+  font-weight: normal;
+}
+
+.page-type-foodfinder .item-list ul li {
+  margin: 0;
+}
+
+.page-type-foodfinder .views-exposed-form .views-exposed-widget {
+  padding: 0;
+}
+
+#edit-field-on-a-stick-tid-all,
+#edit-field-deep-fried-tid-all,
+#edit-field-bacon-tid-all {
+  display: none;
+}
+
+.popup-newsletter .modal-header .modal-title {
+  padding: 15px 0;
+}
+
+.food-image-large,
+.food-image-small {
+  display: none;
+}
+
+.page-type-foodfinder .view img {
+  max-width: 962px;
+}
+
+.page-type-foodfinder .views-exposed-widgets {
+  margin-bottom: 0;
+}
+
+.form-select-food {
+  z-index: 2;
+}
+
+.page-type-foodfinder .views-widget-filter-field_other_tid {
+  display: none;
+}
+
+.popup-newsletter #modal-content .webform-confirmation p {
+  font-size: 18px !important;
+}
+
+div.ctools-modal-content .modal-content {
+  overflow: visible !important;
+}
+
+/* Blog */
+.color-point .form-item {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+span.category {
+  text-decoration: underline;
+}
+
+.block-leave-comment .form-item .form-required {
+  display: none;
+}
+
+.block-comments h3 {
+  color: #4E493F;
+  font-size: 22px;
+  font-family: "AvenirLT-Black";
+}
+
+.block-leave-comment .form-item,
+.block-leave-comment .captcha {
+  margin-top: 0;
+}
+
+.block-leave-comment .captcha .description {
+  display: none;
+}
+
+.page-blog #main .body-content {
+  min-height: 550px;
+}
+
+/* End of Blog */
+#browse-wrapper #navigation-tree li {
+  display: block;
+}
+
+.node-sponsorship .content-wrapper.clear-box.even {
+  padding-top: 0;
+}
+
+.page-type-sponsorship .sponsors-list .img img {
+  width: auto;
+  max-width: 130px;
+}
+
+.page-type-sponsorship .sponsors-list figure {
+  margin: 0 0 1em;
+}
+
+.page-type-sponsorship .sponsors-list .img, .page-type-sponsorship .sponsors-list .description {
+  display: block;
+}
+
+/* Clone */
+.node-type-state-fair-event .action-links li a {
+  color: #B22530;
+  float: right;
+  font-family: "thirsty_script_lightregular";
+  font-size: 20px;
+}
+
+.node-type-state-fair-event .page-type-promo .action-links li a {
+  float: left;
+}
+
+.node-type-state-fair-park-event .action-links li a {
+  color: #36525F;
+  float: right;
+  font-family: "thirsty_script_lightregular";
+  font-size: 20px;
+}
+
+.page-type-blog .body-inner .content-inner h1 a {
+  color: #5985ab;
+}
+
+.page-type-foodfinder .content-wrapper {
+  height: 593px;
+}
+
+body .page-type-foodfinder .bottom-filter .filter:hover label.coming-soon {
+  display: block;
+  background-color: #3f3f3f;
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iNTAlIiB4Mj0iMTAwJSIgeTI9IjUwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzNmM2YzZiIvPjxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjNTI1MjUyIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjNjE2MTYxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkKSIgLz48L3N2Zz4g');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 0% 50%, 100% 50%, color-stop(0%, #3f3f3f), color-stop(50%, #525252), color-stop(100%, #616161));
+  background-image: -webkit-linear-gradient(left, #3f3f3f 0%, #525252 50%, #616161 100%);
+  background-image: -moz-linear-gradient(left, #3f3f3f 0%, #525252 50%, #616161 100%);
+  background-image: -o-linear-gradient(left, #3f3f3f 0%, #525252 50%, #616161 100%);
+  background-image: linear-gradient(left, #3f3f3f 0%, #525252 50%, #616161 100%);
+  color: #ffb43b;
+  text-align: center;
+  cursor: default;
+}
+
+.page-type-foodfinder p span.selected {
+  color: rgb(255, 173, 14);
+  font-weight: bold;
+}
+
+.page-type-foodfinder p.location-description {
+  font-size: 10px;
+}
+
+.food-vendors-list .views-table {
+  width: 100%;
+}
+
+.page-food-vendors .view-header h2 {
+  font-family: "AvenirLT-Black";
+  font-size: 25px;
+}
+
+.node-blogpost .media_response {
+  clear: both;
+}
+
+.node-blogpost .content img {
+  padding: 0 15px 0;
+}
+
+.node-blogpost .comment ul.links {
+  clear: both;
+  display: block;
+  font-weight: bold;
+}
+
+.page-comment-edit .block-leave-comment .form-item {
+  clear: both;
+}
+
+.page-comment-edit .block-leave-comment fieldset.collapsible {
+  clear: both;
+}
+
+.page-comment-edit .block-leave-comment .form-item label.option {
+  padding-left: 30px;
+}
+
+.page-comment-edit .block-leave-comment .form-item.form-type-radio {
+  position: relative;
+}
+
+.page-comment-edit .captcha {
+  float: left;
+}
+
+.page-node-draft .body .body-inner .body-content {
+  /*padding: 120px 0px 0px 0px;*/
+}
+
+.page-node-draft .page-type-promo .body .body-inner .body-content,
+.page-node-draft .page-type-1 .body .body-inner .body-content,
+.page-node-draft .page-type-4 .body .body-inner .body-content {
+  padding: 120px 52px 0;
+}
+
+#page-wrapper .footer-navigation .menu .menu-item,
+.page-type-4 .footer-type-2 .footer-navigation .menu .menu-item {
+  margin-right: 11px;
+  margin-left: 0;
+}
+
+.releases-list .contextual-links-trigger {
+  display: block;
+}
+
+.footer-navigation .drop-down-menu .list .item {
+  text-align: center;
+}
+
+.page-type-v .content-wrapper .view-vendors .table tbody tr td:first-child {
+  width: 170px;
+}
+
+.page-type-v .content-wrapper .table-logo tbody td strong {
+  margin-left: 0;
+}
+
+.page-type-v .content-wrapper .table-logo tbody td {
+  padding: 2px 16px 2px 0px;
+}
+
+.logo-item .logo-images img {
+  max-width: 80px;
+}
+
+.node-resources .form-item {
+  position: relative;
+}
+
+.node-resources .form-item label {
+  padding-left: 20px;
+  line-height: 27px;
+}
+
+.page-type-foodfinder .bottom-filter .filter.filter-d .widget {
+  left: -228px;
+}
+
+.year-modes a {
+  color: #AB0B26;
+  padding-left: 15px;
+  font-weight: bold;
+}
+
+.year-modes a.active {
+  color: #CC0E3C;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+li .dropdown .social-links {
+  margin-top: 15px;
+}
+
+li .dropdown .social-links h4 {
+  font-family: "thirsty_script_lightregular";
+  font-size: 19px;
+  color: #ffc02b;
+  display: -moz-inline-stack;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  zoom: 1;
+  *display: inline;
+}
+
+li .dropdown .social-links .social-icon {
+  display: -moz-inline-stack;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  zoom: 1;
+  *display: inline;
+  margin-left: 8px;
+  margin-right: 3px;
+}
+
+li .dropdown .social-links .social-icon.fb {
+  height: 21px;
+  width: 12px;
+  background: url('../images/sprite-se469f9155d.png') 0 0 no-repeat;
+}
+
+li .dropdown .social-links .social-icon.tw {
+  height: 16px;
+  width: 18px;
+  background: url('../images/sprite-se469f9155d.png') -526px -71px no-repeat;
+}
+
+li .dropdown .social-links .social-icon.mail {
+  height: 11px;
+  width: 15px;
+  background: url('../images/sprite-se469f9155d.png') -187px -71px no-repeat;
+}
+
+.content-wrapper.even.first {
+  padding-bottom: 0px;
+}
+
+.content-wrapper.even.first h3 {
+  margin-bottom: 0px;
+}
+
+.page-type-custom-xtremebulls .content-custom .col-right .description .content-col a {
+  color: rgb(255, 219, 139);
+  text-decoration: underline;
+}
+
+.page-type-custom-disney .images-promo {
+  right: -60px;
+}
+
+.page-type-custom-disney .images-promo-tickets {
+  text-align: center;
+  padding-top: 30px;
+    position: absolute;
+    bottom:-60px;
+    left: 61px;
+}
+
+/*.page-type-custom-xtremebulls .col-right .image:before {*/
+/*filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);*/
+/*opacity: 0;*/
+/*}*/
+.node-type-cu .even .col-item-second .media-youtube-player {
+  width: 420px;
+  height: 265px;
+}
+
+.node-type-cu .odd .col-item-second img {
+  margin-bottom: 10px;
+}
+
+.page-okstatefair-mobile-menu .page-type-sitemap .sitemap-col ul {
+  margin-left: 0;
+}
+
+.page-okstatefair-mobile-menu .page-type-sitemap .sitemap-col > ul > li > a + ul {
+  margin-left: 20px;
+}
+
+.page-node-1541 .page-type-custom-concert .body-inner,
+.page-node-2196 .page-type-custom-concert .body-inner,
+.page-node-1544 .page-type-custom-concert .body-inner,
+.page-node-11515 .page-type-custom-concert .body-inner {
+  background: #5d320e url('../images/bg/bg_custom-page-1.jpg') 0 0 no-repeat;
+}
+
+.page-type-custom-disney .col-left p a {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.page-type-custom-disney .wrapp-item-position .item-position h5 {
+  font-size: 14px;
+  color: #153040;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.page-type-custom-disney .wrapp-item-position .item-position p {
+  text-transform: none;
+  padding-left: 50px;
+  font-size: 16px;
+}
+
+.page-type-custom-disney .wrapp-item-position .item-position img {
+  float: left;
+}
+
+#node-11515 h2,
+#node-1544 h2 {
+  max-width: 400px;
+}
+
+.page-type-custom-xtremebulls .col-right .image:before {
+  opacity: 0.2;
+  -webkit-transition: opacity 0.3s;
+  -moz-transition: opacity 0.3s;
+  -o-transition: opacity 0.3s;
+  transition: opacity 0.3s;
+}
+
+.node-type-visual-arts .page-type-v .content-wrapper p {
+  line-height: 18px;
+}
+
+.page-type-v .content-wrapper h3.logo-senior-day {
+  margin-top: 0;
+  margin-left: 0;
+  float: left;
+}
+
+table a strong {
+  text-decoration: underline;
+}
+
+.node-type-senior-day .page-type-v .content-wrapper.with-image .content-text li {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+#webform-ajax-wrapper-5770 .img,
+#webform-ajax-wrapper-5639 .img {
+  padding-top: 0;
+  margin-top: -15px;
+}
+
+.openned-golden div.ctools-modal-content .modal-content {
+  overflow: hidden;
+}
+
+#webform-ajax-wrapper-5770 #webform-ajax-wrapper-5771 h3,
+#webform-ajax-wrapper-5770 #webform-ajax-wrapper-5771 p,
+#webform-ajax-wrapper-5770 #webform-ajax-wrapper-5771 .note,
+#webform-ajax-wrapper-5639 #webform-ajax-wrapper-5641 h3,
+#webform-ajax-wrapper-5639 #webform-ajax-wrapper-5641 p,
+#webform-ajax-wrapper-5639 #webform-ajax-wrapper-5641 .note {
+  display: none;
+}
+
+#webform-ajax-wrapper-5770 #webform-ajax-wrapper-5771 .form-ticket-popup,
+#webform-ajax-wrapper-5639 #webform-ajax-wrapper-5641 .form-ticket-popup {
+  padding-top: 0;
+  vertical-align: middle;
+}
+
+#webform-ajax-wrapper-5771 .messages.error,
+#webform-ajax-wrapper-5641 .messages.error {
+  position: absolute;
+  left: 35%;
+  bottom: 76px;
+}
+
+.golden-ticket-img .show-off {
+  position: absolute;
+  top: -9px;
+  left: 37px;
+  display: none;
+}
+
+.golden-header .show-off {
+  display: none;
+  float: left;
+  left: 85px;
+  top: 12px;
+  position: absolute;
+}
+
+.header .golden-ticket.golden-header {
+  top: -4px;
+}
+
+.show-off.menu-sparkle {
+  display: none;
+  float: left;
+  position: absolute;
+}
+
+.show-off.menu-sparkle img {
+  /*float:left;*/
+  width: 20px;
+  height: 20px;
+}
+
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes rotateIn {
+  0% {
+    -webkit-transform-origin: center center;
+    transform-origin: center center;
+    -webkit-transform: rotate(-200deg);
+    transform: rotate(-200deg);
+    opacity: 0;
+  }
+
+  100% {
+    -webkit-transform-origin: center center;
+    transform-origin: center center;
+    -webkit-transform: rotate(0);
+    transform: rotate(0);
+    opacity: 1;
+  }
+}
+
+@keyframes rotateIn {
+  0% {
+    -webkit-transform-origin: center center;
+    -ms-transform-origin: center center;
+    transform-origin: center center;
+    -webkit-transform: rotate(-200deg);
+    -ms-transform: rotate(-200deg);
+    transform: rotate(-200deg);
+    opacity: 0;
+  }
+
+  100% {
+    -webkit-transform-origin: center center;
+    -ms-transform-origin: center center;
+    transform-origin: center center;
+    -webkit-transform: rotate(0);
+    -ms-transform: rotate(0);
+    transform: rotate(0);
+    opacity: 1;
+  }
+}
+
+.rotateIn {
+  -webkit-animation-name: rotateIn;
+  animation-name: rotateIn;
+}
+
+/* Specific Form styes */
+
+body.page-node-2298 .messages.error {
+  background: none !important;
+  border: 0px !important;
+  padding: 0px;
+}
+
+body.page-node-2298 #webform-ajax-wrapper-5770 .messages.error,
+body.page-node-2298 #webform-ajax-wrapper-5639 .messages.error {
+  padding: 0 60px;
+}
+
+body.page-node-2298 input.error {
+  border: 2px solid red !important;
+}
+
+#webform-ajax-wrapper-5771 .messages.error,
+#webform-ajax-wrapper-5641 .messages.error {
+  position: absolute;
+  left: 40%;
+  bottom: 66px;
+}
+
+.golden-ticket-box #webform-ajax-wrapper-5771 .messages.error,
+.golden-ticket-box #webform-ajax-wrapper-5641 .messages.error {
+  left: 154px;
+  bottom: 90px;
+  width: auto;
+  top: auto;
+}
+
+.golden-ticket-box .form-ticket-popup #webform-ajax-wrapper-5771 .messages.error,
+.golden-ticket-box .form-ticket-popup #webform-ajax-wrapper-5641 .messages.error {
+  left: 0;
+  bottom: 70%;
+}
+
+.golden-ticket-box .ajax-progress-throbber {
+  position: absolute;
+}
+
+#webform-ajax-wrapper-5770 form#webform-client-form-5770,
+#webform-ajax-wrapper-5639 form#webform-client-form-5639 {
+  /*padding-top: 33px;*/
+}
+
+#webform-ajax-wrapper-5770 #webform-ajax-wrapper-5771 .webform-confirmation p,
+#webform-ajax-wrapper-5639 #webform-ajax-wrapper-5641 .webform-confirmation p {
+  display: block !important;
+}
+
+#webform-ajax-wrapper-5770 #webform-ajax-wrapper-5771 .webform-confirmation,
+#webform-ajax-wrapper-5639 #webform-ajax-wrapper-5641 .webform-confirmation {
+  top: 47%;
+  left: 250px;
+  position: absolute;
+  margin-top: 0;
+}
+
+#webform-ajax-wrapper-5771 .webform-confirmation,
+#webform-ajax-wrapper-5641 .webform-confirmation {
+  margin-top: 100px;
+  position: relative;
+}
+
+.node-type-visual-arts .art.image-group .image {
+  width: auto;
+  float: left;
+  padding-right: 10px;
+}
+
+body.page-node-5534 div.media-youtube-video.media-youtube-1 {
+  margin-left: 253px;
+  margin-bottom: 15px;
+}
+
+.page-type-v .content-wrapper .table tbody td a {
+  text-decoration: underline !important;
+}
+
+.page-intagram .block-photos-top .with-photo .user-name {
+  text-transform: uppercase;
+  word-wrap: break-word;
+}
+
+.page-intagram .node-instagram-winner div.contextual-links-wrapper {
+  left: 5px;
+  top: 25px;
+}
+
+.page-intagram .block-photos-top .with-photo .user-name a {
+  background: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+}
+
+.page-intagram .block-photos-top .with-photo .photos-top-hd a {
+  color: #ffffff;
+
+}
+
+.page-type-v .content-wrapper.even {
+  width: 100%;
+}
+
+.page-type-custom-disney .content-wrapp {
+  width: 100%;
+}
+
+.calendar-cell .cell-calendar-header .month-menu > ul.pager {
+  background-color: #fff2da;
+  padding-bottom: 5px;
+}
+
+.scholarship-wrapper {
+  clear: both;
+}
+
+.down-padding {
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.node-volunteer .golden-ticket-img {
+  top: 961px !important;
+  right: -103px !important;
+}
+
+.node-sf-space-sales .golden-ticket-img {
+  top: 313px !important;
+  right: -83px !important;
+}
+
+.node-barnyard .golden-ticket-img {
+  top: 406px !important;
+  right: -107px !important;
+}
+
+.node-unpublished {
+  background-color: inherit;
+}
+
+.node-type-wifi-ad .ad {
+  text-align: center;
+}
+
+.node-type-wifi-ad .block-slider {
+  margin-left: -52px;
+  margin-bottom: 20px;
+}
+
+/* Construction Updates gallery */
+.node-type-cu .gallery-wrapper .image-group .image {
+  float: left;
+  width: auto;
+  margin-right: 16px;
+  margin-bottom: 16px;
+}
+
+.node-type-cu .gallery-wrapper .image-group:after {
+  content: '';
+  clear: both;
+  display: block;
+}
+
+.node-type-cu .gallery-wrapper .image-group .image.last {
+  margin-right: 0;
+}
+
+.node-type-cu .gallery-wrapper .image-group .image img {
+  margin: 0;
+}
+
+.node-type-cu .first.node-cu {
+  min-height: 260px;
+}
+
+.body-inner .body-content .style-1.static {
+  text-decoration: none !important;
+  color: #d1453f !important;
+  font-family: "AvenirLT-Black" !important;
+  position: relative;
+  font-size: 17px !important;
+  text-transform: uppercase;
+}
+
+.footer-type-2 > .logo {
+  width: 962px;
+  margin: 0 auto;
+  text-align: right;
+}
+
+.footer-type-2 > .logo a {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 15px;
+}
+
+.footer-type-2 > .logo a:last-child {
+  margin-right: 0;
+}
+
+.link-big {
+  text-align: center !important;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  display: block;
+  font-size: 14px;
+  padding: 10px 13px;
+  background: #b60d33;
+  color: #fff;
+  font-weight: bold;
+  width: 100px;
+}
+
+.page-type-5 .body .admission-fees-list .fees-list-title {
+  text-transform: uppercase;
+}
+
+.node-type-state-fair-park-event .page-type-5 .body .body-inner .body-content .style-3 {
+  display: block;
+  margin-bottom: 14px;
+}
+
+/* Calendar event page */
+.node-type-state-fair-park-event .page-type-5 .body .body-inner .body-content .share-wrapper {
+  text-align: left;
+}
+
+/* State Fair Event */
+.page-type-custom-disney .content-info-wrapper.check,
+.page-type-custom-xtremebulls .content-info-wrapper.check,
+.page-type-promo .content-info-wrapper.check,
+.page-type-check-back .content-info-wrapper.check {
+  min-height: 480px;
+}
+
+.page-type-custom-xtremebulls .content-info-wrapper.check h2,
+.page-type-promo .content-info-wrapper.check h2 {
+  width: 560px;
+}
+
+.node-type-state-fair-event .page-type-promo.page-type-custom-xtremebulls .content-info-wrapper:not(.full-block) .content-info {
+  width: 325px;
+  float: left;
+}
+
+.node-type-state-fair-event .page-type-promo.page-type-custom-xtremebulls .content-info-wrapper:not(.full-block) .images-promo {
+  position: relative;
+  top: auto;
+  right: auto;
+  width: 210px;
+  height: auto;
+  float: right;
+}
+
+/* Livestock Competitions */
+.page-type-1.page-type-v .inactiveLink {
+  pointer-events: none;
+  cursor: default;
+}
+
+.page-type-1.page-type-v .field-collection-view ul.field-collection-view-links {
+  margin-top: 0px;
+}
+
+.page-type-1.page-type-v .field-collection-container,
+.page-type-1.page-type-v .field-collection-container .field-item {
+  margin-bottom: 0;
+}
+
+.page-type-1.page-type-v .field-collection-view ul.field-collection-view-links {
+  margin-bottom: 20px;
+  float: right !important;
+}
+
+.page-type-1.page-type-v ul.field-collection-view-links li {
+  float: left;
+  margin-left: 5px;
+  width: auto;
+  padding-right: 10px !important;
+  list-style: none;
+}
+
+.page-type-1.page-type-v ul.field-collection-view-links li a {
+  padding: 2px 5px;
+  font-size: 11px;
+  text-transform: uppercase;
+  margin-right: 0;
+}
+
+.page-type-1.page-type-v .field-collection-view-links li a {
+  border-style: solid solid solid;
+  border-color: #8e887a;
+  border-width: 1px;
+  height: auto;
+  display: block;
+  font-size: 15px;
+  margin-right: 0.5em;
+  padding: 5px 10px;
+  text-decoration: none;
+  color: #f5e2c1;
+  background: #8e887a;
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgi…gd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkKSIgLz48L3N2Zz4g');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #aea593), color-stop(50%, #8e887a), color-stop(100%, #7f786b));
+  background-image: -moz-linear-gradient(top, #aea593 0%, #8e887a 50%, #7f786b 100%);
+  background-image: -webkit-linear-gradient(top, #aea593 0%, #8e887a 50%, #7f786b 100%);
+  background-image: linear-gradient(to bottom, #aea593 0%, #8e887a 50%, #7f786b 100%);
+}
+
+.page-type-1.page-type-v .action-links-field-collection-add li a {
+  border-style: solid solid solid;
+  border-color: #8e887a;
+  border-width: 1px;
+  height: auto;
+  margin-right: 0.5em;
+  padding: 5px 10px;
+  text-decoration: none;
+
+  color: #f5e2c1;
+  background: #8e887a;
+  line-height: 22px;
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgi…gd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkKSIgLz48L3N2Zz4g');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #aea593), color-stop(50%, #8e887a), color-stop(100%, #7f786b));
+  background-image: -moz-linear-gradient(top, #aea593 0%, #8e887a 50%, #7f786b 100%);
+  background-image: -webkit-linear-gradient(top, #aea593 0%, #8e887a 50%, #7f786b 100%);
+  background-image: linear-gradient(to bottom, #aea593 0%, #8e887a 50%, #7f786b 100%);
+}
+
+.page-type-1.page-type-v .content-wrapper .text-style-a ul.field-collection-view-links li:before {
+  display: none;
+}
+
+.page-type-1.page-type-v .field-collection-container .content-wrapper .text-style-a ul,
+.page-type-1.page-type-v .field-collection-container .content-wrapper .text-style-a p {
+  margin-bottom: 0;
+}
+
+.page-type-1.page-type-v .field-collection-container .content-wrapper .text-style-a .content-items-inner ul {
+  margin-bottom: 45px;
+}
+
+/* Discount page, Shop */
+.node-type-discount .node-discount {
+  min-height: 600px;
+}
+
+/* Competitions */
+.node-type-competitions .page-type-1.page-type-v .field-collection-container.clearfix,
+.node-type-competitions .text-style-a.clearfix {
+  clear: both;
+}
+
+.node-type-competitions .page-type-v .content-wrapper .text-style-a ul li {
+  width: 372px;
+}
+
+.node-type-competitions .page-type-v .content-wrapper.even.width-600-right {
+  width: 562px;
+}
+
+.node-type-competitions .width-600-right .col-left.width-50,
+.node-type-competitions .width-600-right .col-right.width-50 {
+  width: 50%;
+}
+
+.node-type-competitions .page-type-v .content-wrapper .width-600-right .text-style-a ul li {
+  width: 40%;
+}
+
+.node-type-competitions .page-type-v .content-wrapper .text-style-a .content-col h3 {
+  margin: 30px 0 0 0;
+  padding: 0;
+  border-bottom: none;
+}
+
+.node-type-competitions .page-type-v .content-wrapper.odd.first .text-style-a h3 {
+  margin-top: 0;
+}
+
+.node-type-competitions .page-type-v .content-wrapper.odd.first .text-style-a p {
+  margin-bottom: 0;
+}
+
+.node-type-competitions .page-type-v .content-wrapper .text-style-a ul.field-collection-view-links li {
+  width: auto;
+}
+
+.node-type-competitions a {
+  cursor: pointer;
+}
+
+.calendar-coming-soon img {
+  width: 100%;
+}
+
+/* Xtreme golden ticket */
+.node-type-state-fair-event .golden-ticket-img {
+  top: -52px !important;
+  right: -32px !important;
+}
+
+
+.node-type-state-fair-event .golden-ticket-box p {
+  margin-bottom: 5px;
+}
+
+.node-type-state-fair-event #webform-ajax-wrapper-5770 .img {
+  margin-top: 6px;
+}
+
+/* Scholarship golden ticket */
+.node-type-scholarship .golden-ticket-img {
+  top: 896px !important;
+  right: -70px !important;
+}
+
+.node-type-scholarship .golden-ticket-box p {
+  margin-bottom: 5px;
+}
+
+.node-type-scholarship #webform-ajax-wrapper-5770 .img {
+  margin-top: 6px;
+}
+
+/* Visual arts scholarship event */
+.page-type-v .content-wrapper.with-image.image-right .image.gallery-wrapper {
+  width: 380px !important;
+  margin: 0 20px;
+}
+
+/* Xtreme bulls page */
+#node-1540 h2 sup {
+  display: none;
+}
+
+/* Instagram page */
+.page-intagram .info-text p {
+  display: inline;
+}
+
+/* Mobile App: Header */
+.header .top-buttons .btn-app-mobile .btn {
+  width: 90px;
+  height: 33px;
+  background: url('../images/tmp/mobile-app-icon.png');
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -ms-background-size: cover;
+  background-size: cover;
+  font-size: 12px;
+  padding: 9px 5px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.header .top-buttons .btn-app-mobile .btn:hover {
+  background: url('../images/tmp/mobile-app-icon-a.png');
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -ms-background-size: cover;
+  background-size: cover;
+}
+
+/* Newsletter popup */
+.popup-newsletter #modal-content .form-item.form-group-checkboxes input {
+  width: auto;
+}
+
+.popup-newsletter #modal-content {
+  height: auto !important;
+}
+
+.popup-newsletter .modal-content .form-title h2 {
+  display: block;
+  text-align: center;
+  font-size: 22px;
+  font-family: "AvenirLT-Black";
+  padding: 0 0 5px 0;
+  font-weight: normal;
+}
+
+.popup-newsletter #modal-title {
+  display: none;
+}
+
+/* Newsletter direct form page theming */
+/* People will be linking to it directly from social media sites now */
+
+body.page-node-3713 .submitted {
+  display: none;
+}
+
+body.page-node-3713 h2 {
+  font-family: "AvenirLT-Black";
+  margin-bottom: 12px;
+  font-size: 35px;
+  line-height: 36px;
+}
+
+body.page-node-3713 .form-title .webform-component-markup {
+  text-align: center;
+}
+
+body.page-node-3713 #webform-component-group--group-description {
+  margin: 20px 0px 50px;
+  text-align: center;
+}
+
+body.page-node-3713 .form-item.form-group-checkboxes {
+  width: 400px;
+  /* float: right; */
+  position: absolute;
+  left: 550px;
+  margin: 0px;
+}
+
+body.page-node-3713 .checker {
+  position: relative;
+}
+
+body.page-node-3713 .checker span {
+  float: left;
+  margin-right: 10px;
+}
+
+body.page-node-3713 .form-item.form-type-checkbox {
+  margin: 7px auto;
+}
+
+body.page-node-3713 .form-item.webform-component-textfield .webform-component-textfield,
+body.page-node-3713 .webform-component-mailchimp {
+  margin-left: 140px;
+  margin-bottom: 20px;
+}
+
+body.page-node-3713 div#webform-component-group--subgroups {
+  margin: 0px;
+}
+
+body.page-node-3713 .form-actions {
+  display: block;
+  height: 70px;
+  text-align: right;
+  padding-right: 150px;
+}
+
+body.page-node-3713 input[type=text],
+body.page-node-3713 input[type=email] {
+  width: 260px;
+  padding: 4px 8px;
+}
+
+body.page-node-3713 select {
+  margin-left: 140px;
+
+  width: 280px;
+  padding: 6px;
+  border: none;
+  border-top: 1px solid #adadad;
+  border-left: 1px solid #adadad;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin-bottom: 5px;
+  height: 27px;
+}
+
+body.page-node-3713 input[type=submit] {
+  background: #b60d33;
+  display: inline-block;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  color: #fff;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+
+  position: absolute;
+  right: 225px;
+}
+
+body.page-node-3713 input[type=submit]:hover {
+  background: #a40a2d;
+  color: #fff;
+}
+
+/* Post submission page */
+body.page-node-3713 .webform-confirmation .btn-close {
+  display: none;
+}
+
+body.page-node-3713 .webform-confirmation {
+  margin: 80px 0 80px 0;
+}
+
+body.page-node-3713 .webform-confirmation h2 {
+  text-align: center;
+}
+
+body.page-node-3713 .webform-confirmation p {
+  width: 500px;
+  margin: auto;
+  line-height: 28px;
+}
+
+/* Check back */
+.page-type-check-back .content-info-wrapper h2 {
+  font-size: 38px;
+  font-family: "AvenirLT-Black";
+}
+
+.page-node-3010 .b-slider, .page-node-3010 #node-3010 + .content-wrapper + .content-wrapper {
+  padding: 20px 52px;
+  margin: 0 -52px;
+}
+
+.page-node-3010 #node-3010 + .content-wrapper.even,
+.page-node-3010 #node-3010 + .content-wrapper.even + .content-wrapper + .content-wrapper {
+  color: #444037;
+  background: none;
+}
+
+.page-node-3010 #node-3010 + .content-wrapper.even + .content-wrapper,
+.page-node-3010 .b-slider,
+.page-node-3010 #node-3010 + .content-wrapper.even + .content-wrapper + .content-wrapper + .content-wrapper,
+.page-node-3010 .change-node-date {
+  background: #6d6759 url("../images/bg/bg-dark-gray.png") 0 0 repeat;
+  color: #ffe9ba;
+}
+
+.page-type-check-back .check-back {
+  width: 560px;
+}
+
+.page-type-check-back .check-back h2 {
+  font-family: "madfontregular";
+  letter-spacing: 4px;
+  color: #fff;
+  font-size: 34px;
+}
+
+.page-type-check-back .check-back p {
+  font-size: 38px;
+  font-family: "AvenirLT-Black";
+  color: #fff;
+}
+
+.page-type-check-back-views .body .body-inner .body-content {
+  padding: 0;
+  background-image: none !important;
+}
+
+#fancybox-wrap + .fb_reset + img {
+  display: none;
+}
+
+.content-info-wrapper.full-block .table-agenda-wrapper {
+  margin-top: 8px;
+}
+
+.node-type-state-fair-event .content-info-wrapper.full-block .table-agenda-wrapper {
+  margin-top: 3px;
+}
+
+.page-type-custom-xtremebulls .share-wrapper > a.field-location-map-popup, .node-type-state-fair-event .share-wrapper > a.field-location-map-popup {
+  /*float: none;*/
+}
+
+.page-type-custom-xtremebulls .info-text, .node-type-state-fair-event .info-text {
+  clear: both;
+}
+
+.content-info-wrapper {
+  max-width: 563px;
+}
+
+.page-type-check-back .check-back h2 {
+  margin-bottom: 16px;
+  margin-top: 16px;
+}
+
+.page-type-check-back .check-back p {
+  line-height: 1.2;
+}
+
+.sf-event-combine .wrapp-player {
+  background: none;
+}
+
+.sf-event-combine.even, .sf-event-combine.odd {
+  position: relative;
+}
+
+.sf-event-combine.odd {
+  padding-top: 60px;
+}
+
+.sf-event-combine.odd h2 {
+  margin-top: 0;
+}
+
+.sf-event-combine.even:before, .sf-event-combine.odd:before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 962px;
+  bottom: 0;
+  content: '';
+  transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+}
+
+.sf-event-combine.even:before {
+  background: #2b2a27 url(../images/bg/bg_promo_body.jpg) 0 0 repeat;
+  z-index: -1;
+}
+
+.sf-event-combine.odd:before {
+  background: #6d6759 url(../images/bg/bg_gray.jpg) 0 0;
+  z-index: -1;
+}
+
+.sf-event-combine.odd {
+  z-index: 1;
+}
+
+
+.wrapp-player.empty {
+  background: transparent;
+}
+
+.page-type-custom-disney .node-disnep-subpage + .col-left p {
+    width: 220px;
+}
+
+.page-type-custom-disney .col-left{
+    position: relative;
+    padding-bottom: 90px;
+}
+
+.page-type-custom-disney .content-info-wrapper + .content-wrapp {
+    position: relative;
+    overflow: visible;
+}
+
+.page-type-custom-disney .content-info-wrapper + .content-wrapp:after {
+    content: " ";
+    display: block;
+    height: 0;
+    clear: both;
+    overflow: hidden;
+    visibility: hidden;
+}
+
+.page-type-promo.page-type-custom-disney .body .body-inner .body-content{
+    padding: 75px 52px 0px 52px;
+}
+
+.page-type-promo.page-type-custom-disney .title-promo{
+    height: 255px;
+}
+
+.page-node-17648 .page-type-v .content-wrapper.first {
+  width:100%;
+  float: none;
+}
+
+.page-node-17648 .page-type-v .content-wrapper img{
+  max-width: 100%;
+}
+
+.page-type-custom-xtremebulls .share-wrapper > a {
+  float: none;
+}
+
+/* Employement */ 
+
+.page-employment .btn-wrapp.style-a {
+  background: #b60d33;
+  display: inline-block;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  color: #fff;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  margin-left: 40%;
+}
+
+.page-employment .btn-wrapp.style-a a {
+  font-color: white;
+  text-decoration: none;
+}
+
+.page-type-v .btn-wrapp.style-a {
+  margin-bottom: 12px;
+ }
+
+.page-type-v .btn-wrapp.style-a a{
+  background: #b60d33;
+  display: inline-block;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  color: #fff;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.page-node-2245 .content-text table{
+  height: auto !important;
+}
+
+.calendar-coming-soon {
+  margin: -120px -52px 0 -52px;
+}
+
+/* Food & Beverage Department */
+.page-node-17775 .page-type-v .content-wrapper img {
+  max-width: 100%;
+}
+
+.page-node-17775 .pika-stage {
+  min-height: 285px;
+}
+
+.box-golden-ticket .messages {
+  position: absolute;
+  top: -43px;
+  left: 0;
+  right: 0;
+}
+
+.page-node-15025 .page-type-v .content-wrapper.even {
+  background: none ;
+  color: #444037;
+}
+
+.golden-ticket-box .form-success, .golden-ticket-box .box-sorry {
+  padding-top: 5px !important;
+}
+
+.golden-ticket-box.box-golden-ticket .webform-confirmation .img{
+  display: block !important;
+  padding-top: 20px !important;
+}
+
+.page-node-1539 .golden-ticket-box.box-golden-ticket .webform-confirmation .img {
+  padding-top: 5px !important;
+}
+
+.golden-ticket-box .webform-confirmation p{
+  margin-bottom: 10px;
+}
+
+.golden-ticket-box.box-golden-ticket .webform-confirmation .img img{
+  width: 200px;
+}
+
+.golden-ticket-box.box-golden-ticket  .form-success .img {
+  padding-top: 35px !important;
+}
+
+.golden-ticket-box .form-success .webform-confirmation {
+  left: 0 !important;
+  right: 0;
+}
+
+.page-type-1.page-type-v .content-wrapper.with-image .content-text li {
+  list-style-position: outside;
+}
+
+.page-type-1.page-type-v tbody{
+  border-top:none;
+}
+
+/** Red Button styles **/
+
+.node-type-state-fair-event .btn-wrapp.style-a,
+.page-node-1539 .btn-wrapp.style-a,
+.page-node-11515 .btn-wrapp.style-a,
+.page-node-17742 .btn-wrapp.style-a,
+.page-node-15033 .btn-wrapp.style-a,
+.page-node-1949 .btn-wrapp.style-a {
+  background: #b60d33;
+  display: inline-block;
+  color: #fff;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.node-type-state-fair-event .btn-wrapp.style-a a,
+.page-node-1539 .btn-wrapp.style-a a,
+.page-node-11515 .btn-wrapp.style-a a,
+.page-node-17742 .btn-wrapp.style-a a,
+.page-node-15033 .btn-wrapp.style-a a,
+.page-node-1949 .btn-wrapp.style-a a {
+  color: white;
+  text-decoration: none;
+}
+
+.btn-wrapp.style-a:hover {
+  opacity: 0.9;
+}
+

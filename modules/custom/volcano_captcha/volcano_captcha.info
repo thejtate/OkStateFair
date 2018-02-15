@@ -1,0 +1,11 @@
+name =  volcano captcha 
+description = "custom captcha"
+core = 7.x
+version = "7.x-1.0"
+project = colcano captcha
+
+package = Custom
+
+dependencies[] = captcha
+
+configure = admin/settings/volcano_captcha

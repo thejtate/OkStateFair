@@ -1,0 +1,135 @@
+<?php
+     	
+/**
+ * @file
+ * volcano_captcha.module
+ */
+
+/**
+ * Implements hook_help().
+ */
+function volcano_captcha_help($path, $arg) {
+    switch ($path) {
+        case 'admin/help#volcano_captcha':
+            $output = '<p>' . t('This module provide additional security to the Captcha module.') . '</p>';
+            return $output;
+    }
+}
+
+function volcano_captcha_menu() {
+    $items = array();
+
+    $items['getcaptchavalue'] = array(
+        'title'             => "new",
+        'access callback'   => TRUE,
+        'page callback'     => 'volcano_captcha_get_ajaxip',
+        'access arguments'  => array('access content'),
+        'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+
+/**
+ * Implementation of hook_form_alter().
+ *
+ * This function adds hidden fields to the CAPTCHA form.
+ */
+function volcano_captcha_form_alter(&$form, &$form_state, $form_id) {
+    $form['left_param'] = array(
+        '#type'                 => 'hidden',
+        '#default_value'        => '',
+        '#attributes'           => array('autocomplete' => 'off'),
+        '#attributes'           => array('id' => 'left_param'),
+    );
+
+    $form['hidden_item'] = array(
+        '#type'                 => 'hidden',
+        '#default_value'        => '',
+        '#attributes'           => array('autocomplete' => 'off'),
+        '#attributes'           => array('id' => 'hidden_item'),
+    );
+
+    $form['human_token'] = array(
+        '#type'                 => 'hidden',
+        '#default_value'        => '',
+        '#attributes'           => array('autocomplete' => 'off'),
+        '#attributes'           => array('id' => 'human_token'),
+    );
+
+    $form['#attached']['js'][] = drupal_get_path('module', 'volcano_captcha') . '/webtoolkit.md5.js';
+    $form['#attached']['js'][] = drupal_get_path('module', 'volcano_captcha') . '/volcano_captcha.js';
+
+    $form['#validate'][]      = 'volcano_captcha_captcha_validate';
+}
+
+/**
+ * Implements hook_element_info_alter().
+ */
+//function volcano_captcha_element_info_alter(&$element) {
+//
+//    if (isset($element['captcha'])) {
+//            $element['captcha']['#after_build'][]           = 'volcano_captcha_after_build_process';
+////            $element['captcha']['#captcha_validate'][]     = '';//'volcano_captcha_captcha_validate';
+//
+//    }
+//}
+
+/**
+ * Add hidden fields to captcha form element
+ *
+ * @return
+ *   The processed element.
+ *
+ */
+//function volcano_captcha_after_build_process($element, $form_state) {
+//    $form_id = $element['#captcha_info']['form_id'];
+//    $captcha_point = captcha_get_form_id_setting($form_id);
+////    if ($captcha_point && $captcha_point->captcha_type && $captcha_point->captcha_type == 'Image' && isset($element['captcha_widgets']['captcha_image'])) {
+////        $element['captcha_widgets']['volcano_captcha'] = array(
+////            '#markup' => theme('volcano_captcha_hidden_field_start', array('url' => 'captcha/refresh/' . $form_id)),
+////        );
+////    }
+//    $element['captcha_widgets']['volcano_captcha_field1'] = array(
+//        '#type'         =>  'hidden',
+//        '#name'         =>  'hiddden_item',
+//        '#size'         =>  7,
+//        '#value'        =>  "",
+//    );
+//    $element['captcha_widgets']['volcano_captcha_field2'] = array(
+//        '#type'         =>  'hidden',
+//        '#name'         =>  'human_token',
+//        '#size'         =>  7,
+//        '#value'        =>  "",
+//    );
+//    return $element;
+//}
+
+function volcano_captcha_captcha_validate($element, &$form_state) {
+    $salt1   = "m t!p76Y/1+350k";
+    $salt2   = "9X|!5)]m#|,1/cb";
+
+    $ip     = $_SERVER['REMOTE_ADDR'];
+    $domain  = $_SERVER['HTTP_HOST'];
+
+    $val1 = md5($ip.$salt1);
+    $val2 = md5($domain.$salt2);
+
+    if($_POST["left_param"] != "" || $_POST["hidden_item"] != $val1 || $_POST["human_token"] != $val2){
+        form_set_error('captcha_point_form_id', t('Illegal captcha data'));
+    }
+}
+
+function volcano_captcha_get_ajaxip() {
+    if (isset($_SERVER['REMOTE_ADDR'])) {
+        $data = $_SERVER['REMOTE_ADDR'];
+        drupal_json_output(
+            array(
+                'status'   => TRUE,
+                'data'     => $data,
+            ));
+        exit();
+    }
+    else {
+        drupal_not_found();
+    }
+}

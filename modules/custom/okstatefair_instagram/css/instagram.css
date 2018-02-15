@@ -1,0 +1,18 @@
+.instagram {
+    clear: both;
+    width: 962px;
+}
+
+.instagram-placeholder {
+    float: left;
+}
+
+.instagram-button-wraper {
+    text-align: center;
+    padding-bottom: 40px;
+}
+
+.instagram-button-wraper .btn-back-wrapp .btn-back{
+    color: #bb0e36;
+    padding: 9px 28px 8px;
+}

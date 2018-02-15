@@ -1,0 +1,4 @@
+name = Okstatefair custom
+description = Custom Okstate module.
+core = 7.x
+package = custom

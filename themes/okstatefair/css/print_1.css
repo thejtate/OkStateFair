@@ -1,0 +1,9 @@
+@media print {
+  body {   size: landscape; 
+  text-align: center;
+  }
+  body img {
+  margin: auto; 
+  }
+}
+@page {size: landscape}

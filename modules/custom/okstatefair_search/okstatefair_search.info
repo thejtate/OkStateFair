@@ -1,0 +1,7 @@
+name = Okstatefair custom search
+description = Okstatefair custom search.
+core = 7.x
+package = custom
+
+dependencies[] = search
+dependencies[] = node

@@ -1,0 +1,35 @@
+#tinymce p img {
+  padding: 0 15px 0;
+}
+.sortable-lists #sortable1, .sortable-lists #sortable2 {
+  width: 350px;
+}
+
+
+.revision-title-background a {
+  color: white;
+}
+
+.revision-title-background{
+  border-radius: 20px;
+  background: rgb(111, 148, 184);
+  color: white;
+  width: 100px;
+  padding: 2px 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.revision-year-2014 {
+  background: rgb(242,156,7);
+}
+.field-name-field-sf-event-media > div {
+  display: inline-block;
+  margin-right: 20px;
+}
+.page-node-3788 #edit-field-rvpark-mobile-content {
+    display: none;
+}
+.page-node-1948 #edit-field-rvpark-mobile-content {
+    display: none;
+}

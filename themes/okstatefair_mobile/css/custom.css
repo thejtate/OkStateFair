@@ -1,0 +1,256 @@
+/* Ticket office */
+.node-type-ticket-office .structs-wrapper .content-item h4 {
+  font-family: Arial, 'Nimbus Sans L', Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 0.9375em;
+}
+.node-type-ticket-office table th,
+.node-type-ticket-office table td,
+.node-type-ticket-office table tr {
+  font-weight: normal;
+  background: none;
+  border: 0;
+  display: block;
+}
+.node-type-ticket-office table tr {
+  padding: 15px 0 0;
+}
+.node-type-ticket-office table {
+  display: block;
+}
+.node-type-ticket-office tbody {
+  border: 0;
+}
+/* End of Ticket office */
+/*Agenda */
+.agenta-wrapper .empty-agenda {
+    display: none;
+}
+.agenta-wrapper .menu-items-wrapper .empty-agenda {
+    display: block;
+}
+.share-ajax-loader {
+    display: none;
+}
+/*END Agenda*/
+/* Calendar*/
+.structs-nav-wrapper .view-grouping.featured-events .nav-list a {
+    background-color: #ad1e1e;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ad1e1e), color-stop(100%, #721010));
+    background-image: -webkit-linear-gradient(top, #ad1e1e 0%, #721010 100%);
+    background-image: -moz-linear-gradient(top, #ad1e1e 0%, #721010 100%);
+    background-image: -o-linear-gradient(top, #ad1e1e 0%, #721010 100%);
+    background-image: linear-gradient(top, #ad1e1e 0%, #721010 100%)
+}
+.structs-nav-wrapper .view-grouping.featured-events .nav-list a .nav-text-full{
+    color: #fff;
+}
+.table-schedule .table.table-event-custom td a {
+    color: #000;
+}
+.featured-events .nav-date-title {
+    display: none;
+}
+/*END Calendar*/
+.flexslider .slides img {
+height: auto;
+}
+.structs-nav-wrapper .nav-dropdown .list-month a{
+  text-transform: uppercase;
+}
+.structs-nav-wrapper .nav-year .left-nav-item,
+.structs-nav-wrapper .nav-year .right-nav-item{
+  text-indent: -9999px;
+}
+
+span.img-data{
+    display: block;
+}
+span.img-loader{
+    color: #AAAAAA;
+    display: block;
+    font-size: 70%;
+}
+.share-list.type-share-2 .item-twitter a,
+.share-list.type-share-2 .item-facebook a,
+.share-list.type-share-2 .item-mail a,
+.share-list.type-share-1 .item-twitter a,
+.share-list.type-share-1 .item-facebook a,
+.share-list.type-share-1 .item-mail a{
+  text-indent: -9999px
+}
+.page-promo .share-wrapper .link-where {
+  color: #ffae21 !important;
+}
+.structs-nav-wrapper .nav-dropdown .list-month a.active{
+    background: #EAB617;
+}
+.view-state-fair-park-calendar .view-empty{
+  padding: 30px;
+}
+.page-sf .menu li.last a {
+  color: #CD5555;
+}
+.page-sfp .menu li.last a {
+  color: #3299CC;
+}
+.location-description {
+  margin-top: -15px;
+  padding: 0;
+  font-size: 50%;
+}
+
+.hidden {
+  display: none;
+}
+.node-type-food span.selected {
+  color: #FFAD0E;
+  font-weight: bold;
+}
+.btn-taste img {
+    width: 50%;
+    height: auto;
+}
+.node-type-feed-bedding .table-price th {
+  white-space: nowrap;
+    border-bottom: none;
+}
+.node-type-feed-bedding .table-price .col-price-1 {
+  padding-right: 8px;
+}
+.node-type-feed-bedding .table-price table {
+  width: 100%;
+}
+.node-type-feed-bedding .table-price table tbody{
+  border: none;
+}
+.page-sf .node-sf-space-sales h5 {
+    font-size: 1.2em;
+    margin: 0;
+}
+.view-mobile-state-fair-calendar .view-empty p {
+  text-align: center;
+}
+
+.node-type-wifi-ad .structs-slider-wrapper {
+  margin-bottom: 20px;
+}
+
+/* State Fair Event */
+.page-disney .content-text.check,
+.page-extreme.page-promo .content-text.check {
+  min-height: 300px;
+}
+
+.page-extreme.page-promo .content-wrapper .content-text.check h3 {
+  color: #fff;
+  font-size: 1.53333em;
+}
+
+.page-extreme.page-promo .outer-wrapper {
+  background: #b87809;
+}
+
+.page-sf table img{
+  width: 100%;
+  height: auto;
+}
+.page-sf table {
+  width: 100% !important;
+}
+
+.page-sfp .link-where {
+    color: #5f86a3;
+    text-decoration: none;
+}
+
+.page-sfp .link-style-1 {
+    text-decoration: none !important;
+    color: #d1453f !important;
+    font-family: "AvenirLT-Black";
+    text-transform: uppercase;
+}
+
+.page-sfp .table {
+    box-shadow: none !important;
+}
+
+body:not(.page-promo) .table-schedule .table tbody tr td {
+    background: none !important;
+    border-bottom: 1px solid #D0C6B6;
+}
+
+.page-sfp .table-schedule .table th {
+    background: none !important;
+    font-family: "AvenirLT-Black";
+    text-transform: uppercase;
+    border-bottom: 4px solid #D0C6B6;
+    color: #444037;
+    font-size: 15px;
+}
+
+.page-sfp h4 {
+    font-family: "AvenirLT-Black";
+    text-transform: uppercase;
+    border-bottom: 4px solid #D0C6B6;
+    font-size: 15px;
+    padding-bottom: 4px;
+}
+
+.page-sfp h1 {
+    font-size: 21px;
+    margin-bottom: 10px;
+}
+
+.page-sfp .style-1.static {
+    padding: 10px 0;
+    text-decoration: none !important;
+    color: #d1453f !important;
+    font-family: "AvenirLT-Black" !important;
+    position: relative;
+    font-size: 15px !important;
+    text-transform: uppercase;
+    display: block;
+}
+
+.calendar-coming-soon img {
+    width: 100%;
+}
+
+/* Food Finder */
+.food-finder-coming-soon img,
+.concerts-shows-coming-soon img {
+  width: 100%;
+}
+
+/* Check back*/
+.node-state-fair-event .check h2, .node-type-hours-admissions  .check-back h2{
+  font-family: "madfontregular";
+  letter-spacing: 4px;
+  color: #fff;
+  padding-bottom: 0;
+}
+
+.node-state-fair-event .check p, .node-type-hours-admissions  .check-back p {
+  color: #fff;
+  font-size: 1.83333em;
+}
+
+.content-item.item-even + .page-description {
+  color: #fff;
+}
+
+.field-location-map-popup img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Food & Beverage Department */
+.page-node-17775 .page-type-v .content-wrapper.first {
+  width:100%;
+  float: none;
+}
+
+.page-node-17775.page-type-v .content-wrapper img{
+  max-width: 100%;
+}

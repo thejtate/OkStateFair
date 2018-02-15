@@ -1,0 +1,693 @@
+<?php
+
+/**
+ * @file
+ * Events import,export functionality
+ */
+//excel table headers for State fair events import/export
+define('MIGRATION_DATE_HEADER', 'Date');
+define('MIGRATION_START_TIME_HEADER', 'Start Time');
+define('MIGRATION_END_TIME_HEADER', 'End Time');
+define('MIGRATION_LOCATION_HEADER', 'Location');
+define('MIGRATION_CATEGORIES_HEADER', 'Category');
+define('MIGRATION_END_TIME_NOTIFICATION_HEADER', 'End Time Notes');
+define('MIGRATION_FEATURED_HEADER', 'Featured');
+define('MIGRATION_EVENT_TITLE_HEADER', 'Event Title');
+define('MIGRATION_DESCRIPTION_HEADER', 'Description');
+
+//Excel table headers for State fair park events import
+define('MIGRATION_PARK_DATE_HEADER', 'Date');
+define('MIGRATION_PARK_TIME_START_HEADER', 'Time Start');
+define('MIGRATION_PARK_TIME_STOP_HEADER', 'Time Stop');
+define('MIGRATION_PARK_TITLE_HEADER', 'Event Title');
+define('MIGRATION_PARK_DESC_HEADER', 'Description');
+define('MIGRATION_PARK_URL_HEADER', 'URL');
+define('MIGRATION_PARK_FEES_HEADER', 'Admission Fees');
+define('MIGRATION_PARK_TICKETS_HEADER', 'Tickets at Door');
+define('MIGRATION_PARK_BUY_TICKETS_HEADER', 'Buy Tickets Online');
+define('MIGRATION_PARK_LOC_HEADER', 'Locations');
+define('MIGRATION_PARK_CATEGORY_HEADER', 'Category');
+
+//Excel table headers for Vendors import
+define('MIGRATION_VENDOR_VENDOR_HEADER', 'Banner Name');
+define('MIGRATION_VENDOR_CATEGORY_HEADER', 'Category');
+define('MIGRATION_VENDOR_LOCATION_HEADER', 'Area Description');
+
+define('EXPORT_EVENTS_FILE_NAME', 'calendar_events.xls');
+define('EXPORT_WORKSHEET_NAME', 'Events');
+
+define ('EXPORT_DATE_COLUMN_NUMBER', 0);
+define ('EXPORT_START_TIME_COLUMN_NUMBER', 1);
+define ('EXPORT_END_TIME_COLUMN_NUMBER', 2);
+
+define('IMPORT_NODE_DATE_FIELD_NAME', 'field_sf_event_dates');
+
+define('TAXONOMY_CATEGORY_VID', 3);
+define('TAXONOMY_LOCATION_VID', 2);
+
+
+/**
+ * Implements hook_menu().
+ */
+function okstatefair_migration_menu() {
+  $items = array();
+
+  $items['okstatefair/export'] = array(
+    'title' => 'Okstatefair calendar events export',
+    'description' => 'Okstatefair calendar events export',
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'okstatefair_migration_export',
+    'access arguments' => array('export statefair events')
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission();
+ */
+function okstatefair_migration_permission() {
+  return array(
+    'export statefair events' => array(
+      'title' => t('Export statefair events'),
+      'description' => t('Access to export page for statefair calendar events .'),
+    ),
+  );
+
+}
+
+/**
+ * Implements hook_feeds_after_parse().
+ **/
+function okstatefair_migration_feeds_after_parse(FeedsSource $source, FeedsParserResult $result) {
+  if ($source->id == 'state_fair_events_importer') {
+    if (!empty($result->items)) {
+      $parse_state = $source->state(FEEDS_PARSE);
+      $first_position = $parse_state->pointer - count($result->items);
+      foreach ($result->items as $key => $row) {
+        $current_excel_row_number = $first_position + $key + 2;
+        //default values
+        $result->items[$key][MIGRATION_START_TIME_HEADER] = '';
+        $result->items[$key][MIGRATION_END_TIME_HEADER] = '';
+        $result->items[$key][MIGRATION_CATEGORIES_HEADER] = array();
+        $result->items[$key][MIGRATION_FEATURED_HEADER] = 0;
+        $result->items[$key][MIGRATION_LOCATION_HEADER] = !empty($row[MIGRATION_LOCATION_HEADER]) ? $row[MIGRATION_LOCATION_HEADER] : array();
+        try {
+          //split multiple categories
+          if (!empty($row[MIGRATION_CATEGORIES_HEADER])) {
+            $result->items[$key][MIGRATION_CATEGORIES_HEADER] = explode(', ', $row[MIGRATION_CATEGORIES_HEADER]);
+          }
+          //field "featured"
+          if (!empty($row[MIGRATION_FEATURED_HEADER]) && ($row[MIGRATION_FEATURED_HEADER] == 'X' || $row[MIGRATION_FEATURED_HEADER] == 'x')) {
+            $result->items[$key][MIGRATION_FEATURED_HEADER] = 1;
+          }
+          //Date start
+          if (!empty($row[MIGRATION_DATE_HEADER])) {
+            if (!empty($row[MIGRATION_START_TIME_HEADER])) {
+              $start_date_time_object = okstatefair_migration_get_date_time_from_cells($row[MIGRATION_DATE_HEADER], $row[MIGRATION_START_TIME_HEADER]);
+              if (!empty($start_date_time_object)) {
+                $result->items[$key][MIGRATION_START_TIME_HEADER] = $start_date_time_object;
+              }
+              else {
+                okstatefair_migration_add_feeds_error($source, t('Row %key, invalid "Start time" value', array('%key' => $current_excel_row_number)));
+              }
+            }
+            //Date end, process only if we have start date_time
+            if (!empty($row[MIGRATION_END_TIME_HEADER]) && !empty($start_date_time_object)) {
+              $end_date_time_object = okstatefair_migration_get_date_time_from_cells($row[MIGRATION_DATE_HEADER], $row[MIGRATION_END_TIME_HEADER]);
+              if (!empty($end_date_time_object)) {
+                if ($end_date_time_object >= $start_date_time_object) {
+                  $result->items[$key][MIGRATION_END_TIME_HEADER] = $end_date_time_object;
+                }
+                else {
+                  //it's next day
+                  $end_date_time_object->modify('+1 day');
+                  $result->items[$key][MIGRATION_END_TIME_HEADER] = $end_date_time_object;
+                }
+
+              }
+              else {
+                okstatefair_migration_add_feeds_error($source, t('Row %key, invalid "End time" value', array('%key' => $current_excel_row_number)));
+              }
+            }
+          }
+        } catch (Exception $e) {
+          okstatefair_migration_add_feeds_error($source, t('Row %key, error invalid data structure', array('%key' => $current_excel_row_number)));
+        }
+        //fake source for combined unique target
+        $result->items[$key]['combined_unique'] = array(
+          'title' => $result->items[$key][MIGRATION_EVENT_TITLE_HEADER],
+          'location' => $result->items[$key][MIGRATION_LOCATION_HEADER],
+          'description' => $result->items[$key][MIGRATION_DESCRIPTION_HEADER],
+        );
+      }
+    }
+  } elseif ($source->id == 'state_fair_park_events_importer') {
+    if (!empty($result->items)) {
+      $parse_state = $source->state(FEEDS_PARSE);
+      $first_position = $parse_state->pointer - count($result->items);
+      foreach ($result->items as $key => $row) {
+        $current_excel_row_number = $first_position + $key + 2;
+        //default values
+        $result->items[$key][MIGRATION_PARK_TIME_START_HEADER] = '';
+        $result->items[$key][MIGRATION_PARK_TIME_STOP_HEADER] = '';
+        $result->items[$key][MIGRATION_PARK_LOC_HEADER] = array();
+        $result->items[$key][MIGRATION_PARK_CATEGORY_HEADER] = array();
+        $result->items[$key][MIGRATION_PARK_FEES_HEADER] = '';
+        $result->items[$key][MIGRATION_PARK_TICKETS_HEADER] = 0;
+        try {
+          //locations
+          if(!empty($row[MIGRATION_PARK_LOC_HEADER])) {
+            $result->items[$key][MIGRATION_PARK_LOC_HEADER] = explode(', ', $row[MIGRATION_PARK_LOC_HEADER]);
+          }
+          //Categories
+          if(!empty($row[MIGRATION_PARK_CATEGORY_HEADER])) {
+            $result->items[$key][MIGRATION_PARK_CATEGORY_HEADER] = explode(', ', $row[MIGRATION_PARK_CATEGORY_HEADER]);
+          }
+          //admission fees
+          if(!empty($row[MIGRATION_PARK_FEES_HEADER])) {
+            //replace ';' to new line symbol "\n"
+            $result->items[$key][MIGRATION_PARK_FEES_HEADER] = preg_replace('/;. */', "\n", $row[MIGRATION_PARK_FEES_HEADER]);
+          }
+          //Tickets at Door
+          if (!empty($row[MIGRATION_PARK_TICKETS_HEADER]) && ($row[MIGRATION_PARK_TICKETS_HEADER] == 'X' || $row[MIGRATION_PARK_TICKETS_HEADER] == 'x')) {
+            $result->items[$key][MIGRATION_PARK_TICKETS_HEADER] = 1;
+          }
+          //Date start
+          if (!empty($row[MIGRATION_PARK_DATE_HEADER])) {
+            if (!empty($row[MIGRATION_PARK_TIME_START_HEADER])) {
+              $start_date_time_object = okstatefair_migration_get_date_time_from_cells($row[MIGRATION_PARK_DATE_HEADER], $row[MIGRATION_PARK_TIME_START_HEADER]);
+              if (!empty($start_date_time_object)) {
+                $result->items[$key][MIGRATION_PARK_TIME_START_HEADER] = $start_date_time_object;
+              }
+              else {
+                okstatefair_migration_add_feeds_error($source, t('Row %key, invalid "Start time" value', array('%key' => $current_excel_row_number)));
+              }
+            }
+            //Date end, process only if we have start date_time
+            if (!empty($row[MIGRATION_PARK_TIME_STOP_HEADER]) && !empty($start_date_time_object)) {
+              $end_date_time_object = okstatefair_migration_get_date_time_from_cells($row[MIGRATION_PARK_DATE_HEADER], $row[MIGRATION_PARK_TIME_STOP_HEADER]);
+              if (!empty($end_date_time_object)) {
+                if ($end_date_time_object >= $start_date_time_object) {
+                  $result->items[$key][MIGRATION_PARK_TIME_STOP_HEADER] = $end_date_time_object;
+                }
+                else {
+                  //it's next day
+                  $end_date_time_object->modify('+1 day');
+                  $result->items[$key][MIGRATION_PARK_TIME_STOP_HEADER] = $end_date_time_object;
+                }
+
+              }
+              else {
+                okstatefair_migration_add_feeds_error($source, t('Row %key, invalid "End time" value', array('%key' => $current_excel_row_number)));
+              }
+            }
+          }
+        } catch( Exceprion $e) {
+          okstatefair_migration_add_feeds_error($source, t('Row %key: error invalid data structure', array('%key' => $current_excel_row_number)));
+        }
+      }
+    }
+  }
+  elseif ($source->id == 'vendors_importer') {
+    if (!empty($result->items)) {
+      $parse_state = $source->state(FEEDS_PARSE);
+      $first_position = $parse_state->pointer - count($result->items);
+      foreach ($result->items as $key => $row) {
+        $current_excel_row_number = $first_position + $key + 2;
+        //default values
+        $result->items[$key][MIGRATION_VENDOR_CATEGORY_HEADER] = array();
+        $result->items[$key][MIGRATION_VENDOR_LOCATION_HEADER] = array();
+        try {
+          //locations
+          if (!empty($row[MIGRATION_VENDOR_CATEGORY_HEADER])) {
+            $result->items[$key][MIGRATION_VENDOR_CATEGORY_HEADER] = explode('/', $row[MIGRATION_VENDOR_CATEGORY_HEADER]);
+          }
+          //Categories
+          if (!empty($row[MIGRATION_VENDOR_LOCATION_HEADER])) {
+            $result->items[$key][MIGRATION_VENDOR_LOCATION_HEADER] = explode('/', $row[MIGRATION_VENDOR_LOCATION_HEADER]);
+            array_walk($result->items[$key][MIGRATION_VENDOR_LOCATION_HEADER], 'trim');
+          }
+        } catch (Exceprion $e) {
+          okstatefair_migration_add_feeds_error($source, t('Row %key: error invalid data structure', array('%key' => $current_excel_row_number)));
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Prepare DateTime value from excel date and time cells
+ * @param $date_cell
+ * @param $time_cell
+ * @return bool|DateTime
+ */
+function okstatefair_migration_get_date_time_from_cells($date_cell, $time_cell) {
+
+  $result = FALSE;
+  $date = new DateTime($date_cell);//it works if date is string in excel
+  if(empty($date)) {
+    $date = PHPExcel_Shared_Date::ExcelToPHPObject($date_cell);
+  }
+  $time = PHPExcel_Style_NumberFormat::toFormattedString($time_cell, 'hh:mm:ss');
+
+  if (!empty($date) && !empty($time)) {
+    $date_time = '';
+    $date_time .= date_format($date, 'Y-m-d');
+    $date_time .= ' ' . $time;
+    $date_time_object = date_create_from_format('Y-m-d H:i:s', $date_time);
+    if (!empty($date_time_object)) {
+      $date_time_object->setTimezone(new DateTimeZone("UTC"));
+      $result = $date_time_object;
+    }
+  }
+  return $result;
+}
+
+/**
+ * Implements hook_feeds_before_update
+ */
+function okstatefair_migration_feeds_before_update(FeedsSource $source, $item, $entity_id) {
+  if ($source->id == 'state_fair_events_importer') {
+    module_load_include('inc', 'okstatefair_custom', 'includes/okstatefair.special_events');
+    //no need anymore, just ignore special nodes
+//    $special_nodes = okstatefair_event_special_nodes();
+//    if (!empty($entity_id) && okstatefair_is_event_special_node($entity_id)) {
+//      $entities = entity_load('node', array($entity_id));
+//      $original_node = reset($entities);
+//      $source->original_node = clone $original_node;
+//    }
+  }
+}
+
+/**
+ * Implements hook_feeds_presave();
+ **/
+function okstatefair_migration_feeds_presave($source, $entity, $item) {
+  if ($source->id == 'state_fair_events_importer') {
+    module_load_include('inc', 'okstatefair_custom', 'includes/okstatefair.special_events');
+    $is_special_node = !empty($entity->nid) && okstatefair_is_event_special_node($entity->nid);
+    $is_skip_node = !empty($entity->nid) && okstatefair_is_event_skip_import_node($entity->nid);
+    if($is_skip_node) {
+      //IMPORTANT don't update existing skip nodes on import (or nodes will be deleted on next import)
+      watchdog(
+        'okstatefair_import',
+        'skip entity import !entity row item !item',
+        array('!entity' => '<pre>' . print_r($entity, TRUE) . '</pre>', '!item' => '<pre>' . print_r($item, TRUE) . '</pre>')
+      );
+      $entity->feeds_item->skip = TRUE;
+      return;
+    } else if($is_special_node) {
+      //IMPORTANT don't update existing special nodes on import (or nodes will be deleted on next import)
+      watchdog(
+        'okstatefair_import',
+        'skip entity import !entity row item !item',
+        array('!entity' => '<pre>' . print_r($entity, TRUE) . '</pre>', '!item' => '<pre>' . print_r($item, TRUE) . '</pre>')
+      );
+      $entity->feeds_item->skip = TRUE;
+      return;
+    }
+    try {
+      if (!empty($item[MIGRATION_START_TIME_HEADER])) {
+        // Define the values of the new field
+        $values = array();
+        $values['field_name'] = IMPORT_NODE_DATE_FIELD_NAME; // field collection name
+        $values['field_sf_event_dates_end_notes'][LANGUAGE_NONE][0]['value'] = !empty($item[MIGRATION_END_TIME_NOTIFICATION_HEADER]) ? $item[MIGRATION_END_TIME_NOTIFICATION_HEADER] : '' ;
+        $values['field_sf_event_dates_date'][LANGUAGE_NONE][0]['timezone'] = $item[MIGRATION_START_TIME_HEADER]->getTimezone()
+          ->getName();
+        $values['field_sf_event_dates_date'][LANGUAGE_NONE][0]['offset'] = $item[MIGRATION_START_TIME_HEADER]->getOffset();
+        $values['field_sf_event_dates_date'][LANGUAGE_NONE][0]['date'] = $item[MIGRATION_START_TIME_HEADER];
+        $values['field_sf_event_dates_date'][LANGUAGE_NONE][0]['value'] = $item[MIGRATION_START_TIME_HEADER]->format(date_type_format(DATE_DATETIME));
+
+        if (!empty($item[MIGRATION_END_TIME_HEADER])) {
+          $values['field_sf_event_dates_date'][LANGUAGE_NONE][0]['offset2'] = $item[MIGRATION_END_TIME_HEADER]->getOffset();
+          $values['field_sf_event_dates_date'][LANGUAGE_NONE][0]['date2'] = $item[MIGRATION_END_TIME_HEADER];
+          $values['field_sf_event_dates_date'][LANGUAGE_NONE][0]['value2'] = $item[MIGRATION_END_TIME_HEADER]->format(date_type_format(DATE_DATETIME));
+        }
+
+        // Create the field collection entry and associate it with the host entity
+        $field_entity = entity_create('field_collection_item', $values);
+        if($is_special_node) {
+          //no need anymore, just ignore special nodes
+//          if(!empty($source->original_node)) {
+//            //for special nodes updates only date's field collection
+//            $field_entity->setHostEntity($entity->type, $source->original_node);
+//            $field_entity->save();
+//            node_save($source->original_node);
+//            unset($source->original_node);
+//          }
+        } else {
+        $field_entity->setHostEntity('node', $entity);
+        $field_entity->save();
+        }
+      }
+    } catch (Exception $e) {
+      okstatefair_migration_add_feeds_error($source, t('Invalid incoming values') . '<pre>' . print_r($item, TRUE) . '</pre>');
+    }
+  } else if($source->id == 'state_fair_park_events_importer') {
+    try {
+      if (!empty($item[MIGRATION_PARK_TIME_START_HEADER])) {
+        // Define the values of the new field
+        $values = array();
+        $values['field_name'] = 'field_sfp_event_dates'; // field collection name
+
+        $values['field_sf_event_dates_date'][LANGUAGE_NONE][0]['timezone'] = $item[MIGRATION_PARK_TIME_START_HEADER]->getTimezone()
+          ->getName();
+        $values['field_sfp_event_dates_date'][LANGUAGE_NONE][0]['offset'] = $item[MIGRATION_PARK_TIME_START_HEADER]->getOffset();
+        $values['field_sfp_event_dates_date'][LANGUAGE_NONE][0]['date'] = $item[MIGRATION_PARK_TIME_START_HEADER];
+        $values['field_sfp_event_dates_date'][LANGUAGE_NONE][0]['value'] = $item[MIGRATION_PARK_TIME_START_HEADER]->format(date_type_format(DATE_DATETIME));
+
+        if (!empty($item[MIGRATION_PARK_TIME_STOP_HEADER])) {
+          $values['field_sfp_event_dates_date'][LANGUAGE_NONE][0]['offset2'] = $item[MIGRATION_PARK_TIME_STOP_HEADER]->getOffset();
+          $values['field_sfp_event_dates_date'][LANGUAGE_NONE][0]['date2'] = $item[MIGRATION_PARK_TIME_STOP_HEADER];
+          $values['field_sfp_event_dates_date'][LANGUAGE_NONE][0]['value2'] = $item[MIGRATION_PARK_TIME_STOP_HEADER]->format(date_type_format(DATE_DATETIME));
+        }
+
+        // Create the field collection entry and associate it with the host entity
+        $field_entity = entity_create('field_collection_item', $values);
+        $field_entity->setHostEntity($entity->type, $entity);
+        $field_entity->save();
+      }
+    } catch (Exception $e) {
+      okstatefair_migration_add_feeds_error($source, t('Invalid incoming values') . '<pre>' . print_r($item, TRUE) . '</pre>');
+    }
+  }
+}
+
+
+/**
+ * Implements hook_form_alter
+ */
+function okstatefair_migration_form_alter(&$form, $form_state, $form_id) {
+
+  if ($form_id == 'feeds_import_form') {
+    //array_unshift($form['#submit'], 'okstatefair_migration_feeds_import_form_submit');
+    //change to own submit handler, that will clear items before import
+    $form['#submit'] = array('okstatefair_migration_feeds_import_form_submit');
+
+    $form['feeds']['FeedsExcelParser']['#access'] = FALSE;
+    $warning_message = '<h2>' . t('Warning! All previously imported items will be deleted.') . '</h2>';
+    $form['feeds']['warning'] = array(
+      '#markup' => $warning_message,
+      '#weight' => 0,
+    );
+  }
+}
+
+/**
+ * Custom Submit handler for feeds_import_form().
+ */
+function okstatefair_migration_feeds_import_form_submit($form, &$form_state) {
+  // Delete source items and import.
+  $source = feeds_source($form['#importer_id']);
+
+  if (!empty($form_state['values']['feeds']) && is_array($form_state['values']['feeds'])) {
+    $source->addConfig($form_state['values']['feeds']);
+    $source->save();
+  }
+
+  // Refresh feed if import on create is selected.
+  if ($source->importer->config['import_on_create']) {
+    $batch = array(
+      'title' => t('Import'),
+      'operations' => array(
+        array('feeds_batch', array('clear', $source->id, $source->feed_nid)),
+        array('feeds_batch', array('import', $source->id, $source->feed_nid)),
+      ),
+      'progress_message' => '',
+    );
+    batch_set($batch);
+  }
+
+  // Add to schedule, make sure importer is scheduled, too.
+  $source->schedule();
+
+}
+
+/**
+ * Implements hook_phpexcel_export
+ */
+function okstatefair_migration_phpexcel_export($op, &$data,
+                                               &$phpexcel, $options, $column = NULL, $row = NULL) {
+
+  if (!empty($options['type']) && $options['type'] == 'okstefair') {
+    switch ($op) {
+      case 'post cell':
+        if ($row == 1) {
+          //set header cells style
+          $styleArray = array(
+            'font' => array(
+              'bold' => TRUE,
+            )
+          );
+          $phpexcel->getStyleByColumnAndRow($column, $row)->applyFromArray($styleArray);
+        }
+        else {
+          //set date and time cells format
+          if ($column == EXPORT_DATE_COLUMN_NUMBER) {
+            //date column
+            $phpexcel->getStyleByColumnAndRow($column, $row)->getNumberFormat()
+              ->setFormatCode('DD.MM.YYYY');
+          }
+          elseif ($column == EXPORT_START_TIME_COLUMN_NUMBER) {
+            //start time column
+            $phpexcel->getStyleByColumnAndRow($column, $row)->getNumberFormat()
+              //->setFormatCode('HH:MM\ AM/PM');
+              ->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_TIME1);
+          }
+          elseif ($column == EXPORT_END_TIME_COLUMN_NUMBER) {
+            //end time column
+            $phpexcel->getStyleByColumnAndRow($column, $row)->getNumberFormat()
+              //->setFormatCode('HH:MM\ AM/PM');
+              ->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_TIME1);
+
+          }
+        }
+        break;
+    }
+  }
+}
+
+/**
+ * Add import error message
+ */
+function okstatefair_migration_add_feeds_error(FeedsSource $source, $message) {
+  $state = $source->state(FEEDS_PROCESS);
+  $state->failed++;
+  watchdog('import_error', $message, array(), WATCHDOG_ERROR);
+  $source->log('import', $message, array(), WATCHDOG_ERROR);
+}
+
+
+/**
+ * Export menu callback
+ */
+function okstatefair_migration_export() {
+  module_load_include('inc', 'phpexcel', 'phpexcel');
+  libraries_load('PHPExcel');
+
+  $result = okstatefair_migration_get_export_data();
+
+  $node_categories_strings = okstatefair_migration_get_event_categories_formated();
+
+  $export_data = array();
+
+  $utc_timezone = new DateTimeZone("UTC");
+  $default_timezone = new DateTimeZone(date_default_timezone(FALSE));
+
+  foreach ($result as $value) {
+    //start date and time
+    $start_date_time_object = date_create_from_format('Y-m-d H:i:s', $value->field_sf_event_dates_date_value, $utc_timezone);
+    $start_date_time_object->setTimezone($default_timezone);
+    $start_excel_datetime = PHPExcel_Shared_Date::PHPToExcel($start_date_time_object);
+    $start_excel_time = fmod($start_excel_datetime, 1);
+    $start_excel_date = $start_excel_datetime - $start_excel_time;
+
+    //end time
+    $end_excel_time = '';
+    if (!empty($value->field_sf_event_dates_date_value2) && ($value->field_sf_event_dates_date_value2 != $value->field_sf_event_dates_date_value)) {
+      $end_date_time_object = date_create_from_format('Y-m-d H:i:s', $value->field_sf_event_dates_date_value2, $utc_timezone);
+      $end_date_time_object->setTimezone($default_timezone);
+      $end_excel_datetime = PHPExcel_Shared_Date::PHPToExcel($end_date_time_object);
+      $end_excel_time = fmod($end_excel_datetime, 1);
+    }
+
+    $categories = '';
+    if (!empty($node_categories_strings[$value->nid])) {
+      $categories = $node_categories_strings[$value->nid];
+    }
+
+    $row = array();
+    $row[] = $start_excel_date; //Date
+    $row[] = $start_excel_time; //Start Time
+    $row[] = $end_excel_time; //End Time
+    $row[] = $value->field_sf_event_dates_end_notes_value; //End Time Notes (not used on site)
+    $row[] = $value->title; //Event Title
+    $row[] = !empty($value->field_sf_event_featured_value) ? 'X' : ' '; //Featured
+    //$row[] = strip_tags($value->field_sf_event_description_value); //Description
+    $row[] = $value->field_sf_event_description_value; //Description
+    $row[] = $value->location; //Location
+    $row[] = $categories; //Category(s)
+
+
+    $export_data[] = $row;
+  }
+  
+  $headers = array(
+    EXPORT_WORKSHEET_NAME => array(
+      MIGRATION_DATE_HEADER,
+      MIGRATION_START_TIME_HEADER,
+      MIGRATION_END_TIME_HEADER,
+      MIGRATION_END_TIME_NOTIFICATION_HEADER,
+      MIGRATION_EVENT_TITLE_HEADER,
+      MIGRATION_FEATURED_HEADER,
+      MIGRATION_DESCRIPTION_HEADER,
+      MIGRATION_LOCATION_HEADER,
+      MIGRATION_CATEGORIES_HEADER
+    ),
+  );
+
+  $data = array();
+  $data[EXPORT_WORKSHEET_NAME] = $export_data;
+  $directory = file_directory_temp();
+
+  $correct_path = file_create_filename(EXPORT_EVENTS_FILE_NAME, $directory);
+
+  phpexcel_export($headers, $data, $correct_path, array('type' => 'okstefair'));
+
+  drupal_add_http_header('Pragma', 'public');
+  drupal_add_http_header('Expires', '0');
+  drupal_add_http_header('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
+  drupal_add_http_header('Content-Type', 'application/vnd.ms-excel');
+  drupal_add_http_header('Content-Disposition', 'attachment; filename=' . basename($correct_path) . ';');
+  drupal_add_http_header('Content-Transfer-Encoding', 'binary');
+  drupal_add_http_header('Content-Length', filesize($correct_path));
+  readfile($correct_path);
+  unlink($correct_path);
+  drupal_exit();
+
+}
+
+/**
+ * Return array of strings with state fari event categories,
+ * separated by comma
+ */
+function okstatefair_migration_get_event_categories_formated() {
+  $query = db_select('field_data_field_sf_event_categories', 'c')
+    ->condition('n.type', 'state_fair_event')
+    ->condition('n.status', 1)
+    ->fields('n', array('nid'));
+  $query->addField('c', 'field_sf_event_categories_tid', 'tid');
+  $query->addField('term_cat', 'name', 'name');
+  $query->innerJoin('node', 'n', 'n.nid = c.entity_id');
+  $query->innerJoin('taxonomy_term_data', 'term_cat', 'c.field_sf_event_categories_tid = term_cat.tid');
+  $node_categories = $query->execute()->fetchAll();
+
+  $node_categories_strings = array();
+  foreach ($node_categories as $value) {
+    if (empty($node_categories_strings[$value->nid])) {
+      $node_categories_strings[$value->nid] = $value->name;
+    }
+    else {
+      $node_categories_strings[$value->nid] .= ', ' . $value->name;
+    }
+  }
+  return $node_categories_strings;
+}
+
+/**
+ * Return okstatefair calendar export data
+ */
+function okstatefair_migration_get_export_data() {
+
+  $query = db_select('field_data_field_sf_event_dates', 'fc_dates')
+    ->condition('n.type', 'state_fair_event')
+    ->condition('n.status', 1)
+    ->fields('n', array('nid', 'title'))
+    ->fields('fc_dates', array('field_sf_event_dates_value'))
+    ->fields('date', array('field_sf_event_dates_date_value', 'field_sf_event_dates_date_value2'))
+    ->fields('notes', array('field_sf_event_dates_end_notes_value'))
+    ->fields('featured', array('field_sf_event_featured_value'))
+    ->fields('description', array('field_sf_event_description_value'))
+
+    ->orderBy('date.field_sf_event_dates_date_value', 'ASC');
+
+  $query->addField('term_loc', 'name', 'location');
+
+  $query->innerJoin('node', 'n', 'n.nid = fc_dates.entity_id');
+  $query->innerJoin('field_data_field_sf_event_dates_date', 'date', 'date.entity_id = fc_dates.field_sf_event_dates_value');
+  $query->leftJoin('field_revision_field_sf_event_dates_end_notes', 'notes', 'notes.entity_id = fc_dates.field_sf_event_dates_value');
+  $query->leftJoin('field_data_field_sf_event_featured', 'featured', 'featured.entity_id = n.nid');
+  $query->leftJoin('field_data_field_sf_event_description', 'description', 'description.entity_id = n.nid');
+  $query->leftJoin('field_data_field_sf_event_location', 'loc_tid', 'loc_tid.entity_id = n.nid');
+  $query->leftJoin('taxonomy_term_data', 'term_loc', 'loc_tid.field_sf_event_location_tid = term_loc.tid');
+
+  $result = $query->execute()->fetchAllAssoc('field_sf_event_dates_value');
+
+  return $result;
+}
+
+/**
+ * Clear dates field collections for special events
+ */
+function okstatefair_migration_remove_special_events_dates() {
+  module_load_include('inc', 'okstatefair_custom', 'includes/okstatefair.special_events');
+  $nids = okstatefair_event_special_nodes();
+  $skip_nids = okstatefair_event_skip_import_node();
+  $nids_for_remove_date = array_diff($nids, $skip_nids);
+
+  $nodes = entity_load('node', $nids_for_remove_date);
+  $field_collection_item_values = array();
+  foreach ($nodes as $node) {
+    if(!empty($node->field_sf_event_dates[LANGUAGE_NONE])) {
+      foreach ($node->field_sf_event_dates[LANGUAGE_NONE] as $field_item) {
+        $field_collection_item_values[] = $field_item['value'];
+      }
+      unset($node->field_sf_event_dates[LANGUAGE_NONE]);
+      node_save($node);
+    }
+  }
+  entity_delete_multiple('field_collection_item', $field_collection_item_values);
+}
+
+/**
+ * Implements hook_feeds_processor_targets_alter().
+ */
+function okstatefair_migration_feeds_processor_targets_alter(array &$targets, $entity_type, $bundle) {
+  // Example: set an existing target as optional unique.
+  if ($entity_type == 'node' && $bundle == 'state_fair_event') {
+    $targets['sf_event_combined_target'] = array(
+      'unique_callbacks' => array('okstatefair_migration_sfe_mapper_unique'),
+      'optional_unique' => TRUE,
+      'name' => 'Unique target (title, location, description)',
+      'description' => 'Multiple unique target (title, location, description)',
+    );
+  }
+}
+
+function okstatefair_migration_sfe_mapper_unique(FeedsSource $source, $entity_type, $bundle, $target, array $values) {
+
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', $entity_type);
+  $query->entityCondition('bundle', $bundle);
+  $query->propertyCondition('title', $values['title']);
+  $query->fieldCondition('field_sf_event_location', 'tid', okstatefair_migration_get_sfe_term_tid_by_name($values['location']) );
+  if(!empty($values['description'])) {
+    $query->fieldCondition('field_sf_event_description', 'value', $values['description']);
+  }
+  $result = $query->execute();
+
+  if (!empty($result[$entity_type])) {
+    return key($result[$entity_type]);
+  }
+}
+
+function okstatefair_migration_get_sfe_term_tid_by_name($name) {
+  $query = new EntityFieldQuery();
+  $result = $query->entityCondition('entity_type', 'taxonomy_term')
+    ->entityCondition('bundle', 'sf_event_location')
+    ->propertyCondition('name', $name)
+    ->range(0, 1)
+    ->execute();
+  return !empty($result['taxonomy_term']) ? reset($result['taxonomy_term'])->tid : 0;
+}
